@@ -1,0 +1,207 @@
+################################################################################
+#   This is the definition file for segmented tools with an ASCII File
+#    as the database
+#
+#
+#=======================================================================
+# REVISIONS
+#   Date      Name             Description of Change
+#
+#   03Mar2006 rlm              Initial Release
+#
+###############################################################################
+
+DB_PREFIX  "DB("
+DB_SUFFIX  ")"
+ESS_PREFIX "ESS("
+ESS_SUFFIX ")"
+
+
+#############################################################################
+#    The list of DB_ALIAS
+#
+#    All the <alias> defined here can be used in the class description at the
+#    end of this file in order to define the fields that should appear in
+#    the search criteria and search result dialogs within UG for every class.
+#
+#    DB_ALIAS  <alias>
+#    {
+#       DB_ID       < Attribute Identifier defined in the ASCII Data File >
+#       DB_ID_TYPE  < Type of the identifier >
+#           d _ double
+#           i _ integer
+#           s _ string
+#           OPTIONS       "opt1" "opt2 " "opt3" 
+#           OPTIONS_IDS   "val1"  "val2" "val3"
+#           DIALOG_NAME "label in search criteria dialog"
+#           RSET_NAME   "label in search result dialog"
+#    }
+#
+#    OPTIONS and OPTIONS_IDS can be ommitted, If they are specified
+#    then a corresponding option menu is created in the Search Criteria Dialog
+#    instead of a simple search field.
+#############################################################################
+
+#    The DB_ALIAS of the library reference. It is mandatory that this DB_ALIAS
+#    appears in the alias list
+#    
+        DB_ALIAS  libref 
+        {
+           DB_ID        LIBRF
+           DB_ID_TYPE   s
+           DIALOG_NAME "Libref"
+           RSET_NAME   "Libref"
+        }
+
+##################################################################
+#
+#             General Attributes
+#
+##################################################################
+
+        DB_ALIAS Type
+        {
+           DB_ID         T
+           DB_ID_TYPE    i
+        }
+
+        DB_ALIAS  SubType 
+        {
+           DB_ID        STYPE
+           DB_ID_TYPE   i	
+        }
+
+        DB_ALIAS Seq_no
+        {
+           DB_ID       SEQ
+           DB_ID_TYPE  i
+        }
+
+
+#######################################################################
+#
+#                Mill Form Tool Attributes
+#
+#######################################################################
+
+        DB_ALIAS  Seg_length
+        {
+           DB_ID       LEN
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Seg_angle
+        {
+           DB_ID       ANGLE 
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Seg_radius 
+        {
+           DB_ID        RAD
+           DB_ID_TYPE   d	
+        }
+
+        DB_ALIAS Seg_sweep_angle
+        {
+           DB_ID      SWEEP
+           DB_ID_TYPE d
+        }
+
+#######################################################################
+#
+#                 Step Drill Attributes
+#
+#######################################################################
+
+        DB_ALIAS  Seg_diameter
+        {
+           DB_ID       DIAM
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Seg_height
+        {
+           DB_ID       HEI
+           DB_ID_TYPE   d
+        }
+
+#######################################################################
+#
+#                 Turning Form Tool Attributes
+#
+#######################################################################
+
+        DB_ALIAS  Tracking_point
+        {
+           DB_ID       TP
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Nose_radius
+        {
+           DB_ID       RADIUS
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Nose_angle
+        {
+           DB_ID       ANGLE
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Edge_length
+        {
+           DB_ID       LENGTH
+           DB_ID_TYPE   d
+        }
+
+
+###################################################################
+#################################################################
+
+
+LIBREF     libref
+
+
+#########################################################################
+#                      The Class Hierarchy                              #
+#########################################################################
+
+CLASS SEGMENTED_TOOL
+{
+   TYPE QRY
+   QUERY  "[DB(libref)] != [0]"
+   DIALOG libref
+   RSET   libref Type SubType
+   UI_NAME "Segmented_tool"
+
+   CLASS MILL_FORM
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [1] && [DB(SubType)] == [0]"
+      DIALOG libref Type
+      RSET   libref Seg_length Seg_angle Seg_radius Seg_sweep_angle
+      UI_NAME "Mill_Form"
+   }
+
+   CLASS STEP_DRILL
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [1] && [DB(SubType)] == [1]"
+      DIALOG libref Type
+      RSET   libref Seg_diameter Seg_height Seg_angle Seg_radius 
+      UI_NAME "Step_Drill"
+   }
+
+   CLASS TURN_FORM
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [1] && [DB(SubType)] == [2]"
+      DIALOG libref Type
+      RSET   libref Tracking_point Nose_radius Nose_angle Edge_length
+      UI_NAME "Turn_Form"
+   }
+
+}
+

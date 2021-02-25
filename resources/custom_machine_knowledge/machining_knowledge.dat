@@ -1,0 +1,9 @@
+#
+# This file contains the module entry for rule engine component. 
+#     MACHINING_KNOWLEDGE_LIBRARY - the module that contains the machining knowledge. In general
+#                                   there will be only be one entry of this type per unit.
+#
+# MODULE TYPE,FILE NAME
+#
+MACHINING_KNOWLEDGE_LIBRARY,${UGII_CAM_MACHINING_KNOWLEDGE_DIR}machining_knowledge
+

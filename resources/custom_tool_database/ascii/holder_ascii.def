@@ -1,0 +1,453 @@
+################################################################################
+#   This is the definition file for tool holders with an ASCII File as the 
+#    database
+#
+###############################################################################
+
+DB_PREFIX  "DB("
+DB_SUFFIX  ")"
+ESS_PREFIX "ESS("
+ESS_SUFFIX ")"
+
+
+#############################################################################
+#    The list of DB_ALIAS
+#
+#    All the <alias> defined here can be used in the class description at the end
+#    of this file in order to define the fields that should appear in
+#    the search criteria and search result dialogs within UG for every class.
+#
+#    DB_ALIAS  <alias>
+#    {
+#       DB_ID       < Attribute Identifier defined in the ASCII Data File >
+#       DB_ID_TYPE  < Type of the identifier >
+#           d _ double
+#           i _ integer
+#           s _ string
+#           OPTIONS       "opt1" "opt2 " "opt3" 
+#           OPTIONS_IDS   "val1"  "val2" "val3"
+#           DIALOG_NAME "label in search criteria dialog"
+#           RSET_NAME   "label in search result dialog"
+#    }
+#
+#    OPTIONS and OPTIONS_IDS can be ommitted, If they are specified
+#    then a corresponding option menu is created in the Search Criteria Dialog
+#    instead of a simple search field.
+#############################################################################
+
+#    The DB_ALIAS of the library reference. It is mandatory that this DB_ALIAS
+#    appears in the alias list
+#    
+        DB_ALIAS  libref 
+        {
+           DB_ID        LIBRF
+           DB_ID_TYPE   s
+           DIALOG_NAME "Libref"
+           RSET_NAME   "Libref"
+        }
+
+        DB_ALIAS  RecType 
+        {
+           DB_ID        RTYPE
+           DB_ID_TYPE   i	
+        }
+
+##################################################################
+
+        DB_ALIAS Type
+        {
+           DB_ID         HTYPE
+           DB_ID_TYPE    i
+        }
+
+        DB_ALIAS  SubType 
+        {
+           DB_ID        STYPE
+           DB_ID_TYPE   i	
+        }
+
+        DB_ALIAS  N_Sections
+        {
+           DB_ID       SNUM 
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Max_offset
+        {
+           DB_ID       MAXOFF 
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Min_diameter
+        {
+           DB_ID       MINDIA 
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Max_diameter
+        {
+           DB_ID       MAXDIA 
+           DB_ID_TYPE   d
+        }
+
+        DB_ALIAS  Description
+        {
+           DB_ID       DESCR 
+           DB_ID_TYPE   s
+        }
+
+#######################################################################
+
+        DB_ALIAS  Seq_no
+        {
+           DB_ID       SEQ
+           DB_ID_TYPE   i
+        }
+
+
+        DB_ALIAS  Diameter 
+        {
+           DB_ID        DIAM
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(D) Diameter "
+           RSET_NAME "(D) Diameter "
+        }
+
+        DB_ALIAS Height
+        {
+           DB_ID      LENGTH
+           DB_ID_TYPE d
+           DIALOG_NAME "(L) Height"
+           RSET_NAME   "(L) Height"
+        }
+
+       DB_ALIAS  TaperAngle
+        {
+           DB_ID     TAPER
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(B) Taper Angle"
+           RSET_NAME   "(B) Taper Angle"
+        }
+
+        DB_ALIAS  CornerRadius
+        {
+           DB_ID       CRAD
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R1) Corner Radius"
+           RSET_NAME   "(R1) Corner Radius"
+        }
+        
+# for standard turning tool holder
+        DB_ALIAS  HolderStyle
+        {
+            DB_ID         HSTYLE
+            DB_ID_TYPE    s
+            OPTIONS       "All" "A-Style" "B-Style" "C-Style" "D-Style" "E-Style" "F-Style" "G-Style" "H-Style" "I-Style" "J-Style" "K-Style" "L-Style" "M-Style" "N-Style" "O-Style" "P-Style" "Q-Style" "R-Style" "S-Style" "T-Style" "U-Style" "V-Style" "UD-Style"
+            OPTIONS_IDS    "%"    "0"       "1"       "2"       "3"       "4"        "5"       "6"       "7"       "8"       "9"       "10"     "11"       "12"      "13"     "14"      "15"       "16"      "17"    "18"        "19"      "20"     "21"      "22"
+            DIALOG_NAME   "Holder Style"
+            RSET_NAME     "Holder Style"
+        }
+
+        DB_ALIAS  HolderHand
+        {
+            DB_ID         HHAND
+            DB_ID_TYPE    s
+            OPTIONS       "All" "Hand-Left" "Hand-Neutral" "Hand-Right"
+            OPTIONS_IDS    "%"     "0"          "1"            "2"
+            DIALOG_NAME   "Holder Hand"
+            RSET_NAME     "Holder Hand"
+        }
+
+        DB_ALIAS  HolderLength
+        {
+            DB_ID         HLENGTH
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(L) Holder Length"
+            RSET_NAME     "(L) Holder Length"
+        }
+
+        DB_ALIAS  HolderWidth
+        {
+            DB_ID         HWIDTH
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(W) Holder Width"
+            RSET_NAME     "(W) Holder Width"
+        }
+
+        DB_ALIAS ShankType
+        {
+            DB_ID         SHANKT
+            DB_ID_TYPE    s
+            OPTIONS       "All" "Square-Shank" "Round-Shank"
+            OPTIONS_IDS    "%"      "0"           "1"
+            DIALOG_NAME   "Shank Type"
+            RSET_NAME     "Shank Type"
+        }
+
+        DB_ALIAS  ShankWidth
+        {
+            DB_ID         SHANKW
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(SW) Shank Width"
+            RSET_NAME     "(SW) Shank Width"
+        }
+
+        DB_ALIAS  ShankLine
+        {
+            DB_ID         SHANKL
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(SL) Shank Line"
+            RSET_NAME     "(SL) Shank Line"
+        }
+
+        DB_ALIAS  HolderAngle
+        {
+            DB_ID         HANGLE
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(HA) Holder Angle"
+            RSET_NAME     "(HA) Holder Angle"
+        }
+
+        DB_ALIAS  ShankHeight
+        {
+            DB_ID         SHANKH
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(SH) Shank Height"
+            RSET_NAME     "(SH) Shank Height"
+        }
+
+        DB_ALIAS  ShankDefinitionMode
+        {
+            DB_ID         SDEFMODE
+            DB_ID_TYPE    s
+            OPTIONS       "All" "Insert And Holder" "Cutting Edge Angle"
+            OPTIONS_IDS    "%"      "0"           "1"
+            DIALOG_NAME   "Shank Definition Mode"
+            RSET_NAME     "Shank Definition Mode"
+        }
+
+        DB_ALIAS  CuttingEdgeAngle
+        {
+            DB_ID         CEA
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(CEA) Cutting Edge Angle"
+            RSET_NAME     "(CEA) Cutting Edge Angle"
+        }
+
+        DB_ALIAS  AdapterUse
+        {
+            DB_ID         ADAPTER
+            DB_ID_TYPE    s
+            OPTIONS       "All"  "No"  "Yes"
+            OPTIONS_IDS    "%"   "0"   "1"
+            DIALOG_NAME   "Adapter Use"
+            RSET_NAME     "Adapter Use"
+        }
+
+        DB_ALIAS  AdapterStyle
+        {
+            DB_ID         ASTYLE
+            DB_ID_TYPE    s
+            OPTIONS       "All"  "Axial"  "Radial"
+            OPTIONS_IDS    "%"   "0"      "1"
+            DIALOG_NAME   "Adapter Style"
+            RSET_NAME     "Adapter Style"
+        }
+
+        DB_ALIAS  AdapterLength
+        {
+            DB_ID         ALENGTH
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(L) Adapter Length"
+            RSET_NAME     "(L) Adapter Length"
+        }
+
+        DB_ALIAS  AdapterWidth
+        {
+            DB_ID         AWIDTH
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(W) Adapter Width"
+            RSET_NAME     "(W) Adapter Width"
+        }
+
+        DB_ALIAS  AdapterHeight
+        {
+            DB_ID         AHEIGHT
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(H) Adapter Height"
+            RSET_NAME     "(H) Adapter Height"
+        }
+
+        DB_ALIAS  AdapterDiameter
+        {
+            DB_ID         ADIAM
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(DIA) Adapter Diameter"
+            RSET_NAME     "(DIA) Adapter Diameter"
+        }
+
+        DB_ALIAS  AdapterZOffset
+        {
+            DB_ID         AZOFF
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(Z-OFF) Adapter Z-Offset"
+            RSET_NAME     "(Z-OFF) Adapter Z-Offset"
+        }
+
+        DB_ALIAS  AdapterStepLength
+        {
+            DB_ID         ASTEPLEN
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(SL) Adapter Step Length"
+            RSET_NAME     "(SL) Adapter Step Length"
+        }
+
+        DB_ALIAS  AdapterStepDiameter
+        {
+            DB_ID         ASTEPDIAM
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(SDIA) Adapter Step Diameter"
+            RSET_NAME     "(SDIA) Adapter Step Diameter"
+        }
+
+        DB_ALIAS  AdapterTaperLength
+        {
+            DB_ID         ATAPERLEN
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(TL) Adapter Taper Length"
+            RSET_NAME     "(TL) Adapter Taper Length"
+        }
+
+        DB_ALIAS  AdapterTaperAngle
+        {
+            DB_ID         ATAPERANG
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(TA) Adapter Taper Angle"
+            RSET_NAME     "(TA) Adapter Taper Angle"
+        }
+
+        DB_ALIAS  AdapterBlockLength
+        {
+            DB_ID         ABLCKLEN
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(BL) Adapter Block Length"
+            RSET_NAME     "(BL) Adapter Block Length"
+        }
+
+        DB_ALIAS  AdapterBlockWidth
+        {
+            DB_ID         ABLCKWID
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(BW) Adapter Block Width"
+            RSET_NAME     "(BW) Adapter Block Width"
+        }
+
+        DB_ALIAS  AdapterBlockHeight
+        {
+            DB_ID         ABLCKHGHT
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(BH) Adapter Block Height"
+            RSET_NAME     "(BH) Adapter Block Height"
+        }
+
+# for grooving tool holder
+        DB_ALIAS  GrooveStyle
+        {
+            DB_ID         GSTYLE
+            DB_ID_TYPE    s
+            OPTIONS       "All" "Groove-0" "Groove-45" "Groove-90" "Groove-UD"
+            OPTIONS_IDS    "%"     "23"        "24"        "25"       "26"
+            DIALOG_NAME   "Holder Style"
+            RSET_NAME     "Holder Style"
+        }
+
+        DB_ALIAS  InsertExtension
+        {
+            DB_ID         INSERTX
+            DB_ID_TYPE    d
+            DIALOG_NAME   "(IE) Insert Extension"
+            RSET_NAME     "(IE) Insert Extension"
+        }
+
+###################################################################
+#################################################################
+
+
+LIBREF     libref
+
+
+#########################################################################
+#                      The Class Hierarchy                              #
+#########################################################################
+
+CLASS HOLDER
+{
+   TYPE QRY
+   QUERY  "[DB(libref)] != [0] && DB(RecType) == [1]"
+   DIALOG libref
+   RSET   libref Type SubType
+   UI_NAME "Holder"
+
+   CLASS MILLING_DRILLING
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [01]"
+      DIALOG libref Type
+      RSET   libref Description N_Sections Max_offset 
+      UI_NAME "Milling_Drilling"
+   }
+
+   CLASS TURNING
+   {
+       TYPE QRY
+       QUERY  "[DB(Type)] == [02]"
+       DIALOG libref Type
+       RSET   libref Description SubType
+       UI_NAME "Turning"
+
+       CLASS TURNING_STD
+       {
+           TYPE QRY
+           QUERY    "[DB(SubType)] == [0]"
+           DIALOG   libref Description
+           RSET     libref Description
+           UI_NAME  "Std_Turning_Tool_Holder"
+       }
+
+       CLASS GROOVE
+       {
+           TYPE QRY
+           QUERY   "[DB(SubType)] == [1]"
+           DIALOG  libref Description
+           RSET    libref Description
+           UI_NAME "Grooving_Tool_Holder"
+       }
+   }
+
+   CLASS LASER
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [03]"
+      DIALOG libref Type
+      RSET   libref Description N_Sections Max_offset
+      UI_NAME "Laser"
+   }
+   
+   CLASS WEDM
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [04]"
+      DIALOG libref Type
+      RSET   libref Description N_Sections
+      UI_NAME "Wire EDM"
+   }
+
+   CLASS FDM
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [05]"
+      DIALOG libref Type
+      RSET   libref Description N_Sections
+      UI_NAME "FDM"
+   }
+}

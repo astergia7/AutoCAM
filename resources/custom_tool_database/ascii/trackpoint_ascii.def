@@ -1,0 +1,242 @@
+################################################################################
+#   This is the definition file for tool tracking points with an ASCII File
+#    as the database
+#
+#
+#=======================================================================
+# REVISIONS
+#   Date      Name             Description of Change
+#
+#   25Jan2006 rlm              Initial Release
+#   27Feb2014 Cheng Wang       cam10008: Add Definition_type
+###############################################################################
+
+DB_PREFIX  "DB("
+DB_SUFFIX  ")"
+ESS_PREFIX "ESS("
+ESS_SUFFIX ")"
+
+
+#############################################################################
+#    The list of DB_ALIAS
+#
+#    All the <alias> defined here can be used in the class description at the
+#    end of this file in order to define the fields that should appear in
+#    the search criteria and search result dialogs within UG for every class.
+#
+#    DB_ALIAS  <alias>
+#    {
+#       DB_ID       < Attribute Identifier defined in the ASCII Data File >
+#       DB_ID_TYPE  < Type of the identifier >
+#           d _ double
+#           i _ integer
+#           s _ string
+#           OPTIONS       "opt1" "opt2 " "opt3" 
+#           OPTIONS_IDS   "val1"  "val2" "val3"
+#           DIALOG_NAME "label in search criteria dialog"
+#           RSET_NAME   "label in search result dialog"
+#    }
+#
+#    OPTIONS and OPTIONS_IDS can be ommitted, If they are specified
+#    then a corresponding option menu is created in the Search Criteria Dialog
+#    instead of a simple search field.
+#############################################################################
+
+#    The DB_ALIAS of the library reference. It is mandatory that this DB_ALIAS
+#    appears in the alias list
+#    
+        DB_ALIAS  libref 
+        {
+           DB_ID        LIBRF
+           DB_ID_TYPE   s
+           DIALOG_NAME "Libref"
+           RSET_NAME   "Libref"
+        }
+
+##################################################################
+#
+#             General Attributes
+#
+##################################################################
+
+        DB_ALIAS Type
+        {
+           DB_ID         T
+           DB_ID_TYPE    i
+        }
+
+        DB_ALIAS  SubType 
+        {
+           DB_ID        STYPE
+           DB_ID_TYPE   i	
+        }
+
+        DB_ALIAS  Name
+        {
+           DB_ID       NAME 
+           DB_ID_TYPE   s
+        }
+
+        DB_ALIAS Seq_no
+        {
+           DB_ID       SEQ
+           DB_ID_TYPE  i
+        }
+
+        DB_ALIAS  Adjust
+        {
+           DB_ID       ADJREG
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Cutcom
+        {
+           DB_ID       CUTREG 
+           DB_ID_TYPE   i
+        }
+
+#######################################################################
+#
+#                Milling Trackpoint Attributes
+#
+#######################################################################
+
+        DB_ALIAS  Adjust_status
+        {
+           DB_ID       ADJSTAT
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Cutcom_status
+        {
+           DB_ID       CUTSTAT 
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Diameter 
+        {
+           DB_ID        DIAM
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Diameter "
+           RSET_NAME "Diameter "
+        }
+
+        DB_ALIAS Distance
+        {
+           DB_ID      DIST
+           DB_ID_TYPE d
+           DIALOG_NAME "Distance"
+           RSET_NAME   "Distance"
+        }
+
+        DB_ALIAS Z_offset
+        {
+           DB_ID      ZOFF
+           DB_ID_TYPE d
+           DIALOG_NAME "Z Offset"
+           RSET_NAME   "Z Offset"
+        }
+
+        DB_ALIAS  Z_off_status
+        {
+           DB_ID       ZOFFSTAT 
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Definition_type
+        {
+           DB_ID       DEFTYPE
+           DB_ID_TYPE  i
+           DIALOG_NAME "Definition"
+           RSET_NAME   "Definition"
+        }
+
+#######################################################################
+#
+#                 Turning Trackpoint Attributes
+#
+#######################################################################
+
+        DB_ALIAS X_offset
+        {
+           DB_ID      XOFF
+           DB_ID_TYPE d
+           DIALOG_NAME "X Offset"
+           RSET_NAME   "X Offset"
+        }
+
+        DB_ALIAS Y_offset
+        {
+           DB_ID      YOFF
+           DB_ID_TYPE d
+           DIALOG_NAME "Y Offset"
+           RSET_NAME   "Y Offset"
+        }
+
+        DB_ALIAS  Radius_id
+        {
+           DB_ID       RADID 
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS  Cluster_id
+        {
+           DB_ID       CLUSTID 
+           DB_ID_TYPE   i
+        }
+
+        DB_ALIAS Angle
+        {
+           DB_ID      ANGLE
+           DB_ID_TYPE d
+           DIALOG_NAME "Angle"
+           RSET_NAME   "Angle"
+        }
+
+        DB_ALIAS Radius
+        {
+           DB_ID      RAD
+           DB_ID_TYPE d
+           DIALOG_NAME "Radius"
+           RSET_NAME   "Radius"
+        }
+
+###################################################################
+#################################################################
+
+
+LIBREF     libref
+
+
+#########################################################################
+#                      The Class Hierarchy                              #
+#########################################################################
+
+CLASS TRACKPOINT
+{
+   TYPE QRY
+   QUERY  "[DB(libref)] != [0]"
+   DIALOG libref
+   RSET   libref Type SubType
+   UI_NAME "Trackpoint"
+
+   CLASS MILLING_DRILLING
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [01]"
+      DIALOG libref Type
+      RSET   libref 
+      UI_NAME "Milling_Drilling"
+   }
+
+   CLASS TURNING
+   {
+       TYPE QRY
+       QUERY  "[DB(Type)] == [02]"
+       DIALOG libref Type
+       RSET   libref 
+       UI_NAME "Turning"
+ 
+   }
+}
+

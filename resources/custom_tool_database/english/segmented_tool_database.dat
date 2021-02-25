@@ -1,0 +1,122 @@
+# SEGMENTED_TOOL_DATABASE.DAT
+##########################################################################
+#
+#   PURPOSE:
+#
+#      This is the database file used for defining multiple segment tools
+#
+# 
+#
+# The next line causes the on site revision history to be saved. 
+# To prevent this, delete the next line. 
+#      rief Thu Apr 09 2009 12:08 PM  Saving ugti0251_010
+#      rief Thu Apr 09 2009 12:09 PM  Saving ugti0251_011
+#    dbc_logname
+#
+#
+# 18sep2007 mjr  add mill form tools
+# 09apr2009 mjr  add back corner round mill form tools
+# 06Jan2012 Mark Rief    1880063 remove zero SL segments
+#
+##########################################################################
+# The data is organized using the following fields separated by |
+#
+# The following fields are defined for all records
+#
+#  LIBRF           - Unique trackpoint set identifier (library reference of the set)
+#  TYPE            - Type (Class identifier)
+#  STYPE           - Subtype of trackpoint.  Not currently used
+#  SEQ             - Sequence number used to order the trackpoints
+#  
+#
+# The following fields are defined for MILL_FORM tools
+#
+#  LEN             - Length of segment
+#  ANGLE           - Angle of segment
+#  RAD             - Radius of segment if circular, 0.0 for linear
+#  SWEEP           - Sweep angle for circular, 0.0 for linear
+#
+# The following fields are defined for STEP_DRILL
+#
+#  DIAM            - Diameter of segment
+#  HEI             - Height of segment
+#  ANGLE           - Angle of segment
+#  RAD             - Radius of segment if circular, 0.0 for linear
+#
+# The following fields are defined for TURN_FORM
+#
+#  TP              - Tracking Point
+#  RADIUS          - Nose radius
+#  ANGLE           - Nose angle
+#  LENGTH          - Edge length
+#
+#
+#-------------------------------------------------------------------------------
+#CLASS MILL_FORM
+FORMAT LIBRF T STYPE SEQ LEN ANGLE RAD SWEEP
+#-------------------------------------------------------------------------------
+DATA | ugti0251_001 | 1 | 0 | 0 |   0.02344 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_001 | 1 | 0 | 1 |   0.00000 |   1.57080 |   0.06250 |  -1.57080
+DATA | ugti0251_001 | 1 | 0 | 2 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_002 | 1 | 0 | 0 |   0.12500 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_002 | 1 | 0 | 1 |   0.00000 |   1.57080 |   0.12500 |  -1.57080
+DATA | ugti0251_002 | 1 | 0 | 2 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_003 | 1 | 0 | 0 |   0.18750 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_003 | 1 | 0 | 1 |   0.00000 |   1.57080 |   0.25000 |  -1.57080
+DATA | ugti0251_003 | 1 | 0 | 2 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_004 | 1 | 0 | 0 |   0.15625 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_004 | 1 | 0 | 1 |   0.00000 |   1.57080 |   0.37500 |  -1.57080
+DATA | ugti0251_004 | 1 | 0 | 2 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_005 | 1 | 0 | 0 |   0.18750 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_005 | 1 | 0 | 1 |   0.00000 |   1.57080 |   0.50000 |  -1.57080
+DATA | ugti0251_005 | 1 | 0 | 2 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_006 | 1 | 0 | 0 |   0.17675 |   0.78540 |   0.00000 |   0.00000
+DATA | ugti0251_006 | 1 | 0 | 1 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_007 | 1 | 0 | 0 |   0.35350 |   0.78540 |   0.00000 |   0.00000
+DATA | ugti0251_007 | 1 | 0 | 1 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_008 | 1 | 0 | 0 |   0.25000 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_008 | 1 | 0 | 1 |   0.35350 |   0.78540 |   0.00000 |   0.00000
+DATA | ugti0251_008 | 1 | 0 | 2 |   0.35350 |   2.35619 |   0.00000 |   0.00000
+DATA | ugti0251_008 | 1 | 0 | 3 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_009 | 1 | 0 | 0 |   0.50000 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_009 | 1 | 0 | 1 |   0.35350 |   0.78540 |   0.00000 |   0.00000
+DATA | ugti0251_009 | 1 | 0 | 2 |   0.35350 |   2.35619 |   0.00000 |   0.00000
+DATA | ugti0251_009 | 1 | 0 | 3 |   0.12500 |   3.14159 |   0.00000 |   0.00000
+DATA | ugti0251_009 | 1 | 0 | 4 |   1.50000 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_010 | 1 | 0 | 0 |   0.15600 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_010 | 1 | 0 | 1 |   0.06200 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_010 | 1 | 0 | 2 |   0.01400 |   3.14159 |   0.06200 |  -1.57080
+DATA | ugti0251_010 | 1 | 0 | 3 |   0.75100 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_010 | 1 | 0 | 4 |   0.10783 |   0.78540 |   0.00000 |   0.00000
+DATA | ugti0251_010 | 1 | 0 | 5 |   1.42500 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_011 | 1 | 0 | 0 |   0.25000 |   0.00000 |   0.00000 |   0.00000
+DATA | ugti0251_011 | 1 | 0 | 1 |   0.09300 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_011 | 1 | 0 | 2 |   0.01400 |   3.14159 |   0.12500 |  -1.57080
+DATA | ugti0251_011 | 1 | 0 | 3 |   0.78200 |   1.57080 |   0.00000 |   0.00000
+DATA | ugti0251_011 | 1 | 0 | 4 |   0.19660 |   0.78540 |   0.00000 |   0.00000
+DATA | ugti0251_011 | 1 | 0 | 5 |   1.91163 |   1.57080 |   0.00000 |   0.00000
+#END_DATA
+#-------------------------------------------------------------------------------
+#CLASS STEP_DRILL
+FORMAT LIBRF T STYPE SEQ DIAM HEI ANGLE RAD
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+DATA | ugti0304_016 | 1 | 1 | 0 |  0.50000 |  3.03508 |  0.00000 |  0.00000
+DATA | ugti0304_017 | 1 | 1 | 0 |  0.50000 |  0.59060 |  0.00000 |  0.00000
+DATA | ugti0304_017 | 1 | 1 | 1 |  0.56250 |  2.24769 |  0.00000 |  0.00000
+DATA | ugti0304_020 | 1 | 1 | 0 |  0.25000 |  0.59060 |  0.00000 |  0.00000
+DATA | ugti0304_020 | 1 | 1 | 1 |  0.50000 |  1.26164 |  0.00000 |  0.00000
+DATA | ugti0304_023 | 1 | 1 | 0 |  0.25000 |  0.15750 |  0.00000 |  0.00000
+DATA | ugti0304_023 | 1 | 1 | 1 |  0.53540 |  1.69474 |  0.00000 |  0.00000
+DATA | ugti0304_024 | 1 | 1 | 0 |  0.50000 |  2.75590 |  0.00000 |  0.00000
+DATA | ugti0304_024 | 1 | 1 | 1 |  1.29530 |  0.27918 |  0.00000 |  0.00000
+DATA | ugti0304_025 | 1 | 1 | 0 |  0.62500 |  1.96850 |  0.00000 |  0.00000
+DATA | ugti0304_025 | 1 | 1 | 1 |  0.89170 |  2.09389 |  0.00000 |  0.00000
+#END_DATA
+#-------------------------------------------------------------------------------
+#CLASS TURN_FORM
+FORMAT LIBRF T STYPE SEQ TP RADIUS ANGLE LENGTH
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#END_DATA
+

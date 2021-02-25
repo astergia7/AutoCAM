@@ -1,0 +1,14 @@
+#
+#						Custom dat file for FBR Scripts
+#
+###############################################################################
+# 
+# This file should be used to override any standard NX environment variables.
+# The values defined here will take precedence over the NX values. This file 
+# will not be overwritten by an MR installation. 
+#
+# Override any variables here:
+UGII_CAM_LIBRARY_TOOL_ENGLISH_DIR = "C:\Users\vyacheslav\Desktop\FBM\feature_recognition_machining-master\resources\custom_tool_database\english\"
+UGII_CAM_LIBRARY_TOOL_GRAPHICS_PATH = "C:\Users\vyacheslav\Desktop\FBM\feature_recognition_machining-master\resources\custom_tool_database\graphics\"
+UGII_CAM_LIBRARY_TOOL_METRIC_DIR = "C:\Users\vyacheslav\Desktop\FBM\feature_recognition_machining-master\resources\custom_tool_database\metric\"
+UGII_CAM_MACHINING_KNOWLEDGE_DIR = "C:\Users\vyacheslav\Desktop\FBM\feature_recognition_machining-master\resources\custom_machine_knowledge\"

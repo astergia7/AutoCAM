@@ -1,0 +1,2044 @@
+################################################################################
+#   This is the definition file for tools with an ASCII File as the 
+#    database
+#
+#
+#=======================================================================
+#
+DB_PREFIX  "DB("
+DB_SUFFIX  ")"
+ESS_PREFIX "ESS("
+ESS_SUFFIX ")"
+
+
+#############################################################################
+#    The list of DB_ALIAS
+#
+#    All the <alias> defined here can be used in the class description at the end
+#    of this file in order to define the fields that should appear in
+#    the search criteria and search result dialogs within UG for every class.
+#
+#    DB_ALIAS  <alias>
+#    {
+#       DB_ID       < Attribute Identifier defined in the ASCII Data File >
+#       DB_ID_TYPE  < Type of the identifier >
+#           d _ double
+#           i _ integer
+#           s _ string
+#           OPTIONS       "opt1" "opt2 " "opt3" 
+#           OPTIONS_IDS   "val1"  "val2" "val3"
+#           DIALOG_NAME "label in search criteria dialog"
+#           RSET_NAME   "label in search result dialog"
+#    }
+#
+#    OPTIONS and OPTIONS_IDS can be ommitted, If they are specified
+#    then a corresponding option menu is created in the Search Criteria Dialog
+#    instead of a simple search field.
+#############################################################################
+
+#    The DB_ALIAS of the library reference. It is mandatory that this DB_ALIAS
+#    appears in the alias list
+#    
+        DB_ALIAS  libref 
+        {
+           DB_ID        LIBRF
+           DB_ID_TYPE   s
+           DIALOG_NAME "Libref"
+           RSET_NAME   "Libref"
+        }
+
+        DB_ALIAS  Type 
+        {
+           DB_ID        T
+           DB_ID_TYPE   i	
+        }
+
+        DB_ALIAS  SubType 
+        {
+           DB_ID        ST
+           DB_ID_TYPE   i	
+        }
+
+        DB_ALIAS  Descr 
+        {
+           DB_ID        DESCR
+           DB_ID_TYPE   s
+           DIALOG_NAME "Description"
+           RSET_NAME   "Description"
+        }
+
+        DB_ALIAS  CutterID
+        {
+           DB_ID        CUTTERID
+           DB_ID_TYPE   s
+           DIALOG_NAME "Cutter ID"
+           RSET_NAME   "Cutter ID"
+        }
+        
+        DB_ALIAS  IndexNotch
+        {
+           DB_ID        INDEXNOTCH
+           DB_ID_TYPE   d
+           DIALOG_NAME "Index Notch"
+           RSET_NAME   "Index Notch"
+        }
+        
+        DB_ALIAS  TurretRotation
+        {
+           DB_ID        TURRETROT
+           DB_ID_TYPE   d
+           DIALOG_NAME "Turret Rotation"
+           RSET_NAME   "Turret Rotation"
+        }
+
+
+
+##################################################################
+
+        DB_ALIAS  X_Offset
+        {
+           DB_ID       XOFF 
+           DB_ID_TYPE   d	
+        }
+
+        DB_ALIAS  Y_Offset
+        {
+           DB_ID       YOFF 
+           DB_ID_TYPE   d	
+        }
+
+
+        DB_ALIAS  Holder
+        {
+           DB_ID        HLD
+           DB_ID_TYPE   s
+           OPTIONS       "All" "<none>" "Parallel 20" "Parallel 30" "Parallel 40" "Parallel 50" "Parallel 60" "Parallel 80" "Steep Taper 30" "Steep Taper 40" "Steep Taper 45" "Steep Taper 50" "Steep Taper 55" "Steep Taper 60" "Morse Taper 0" "Morse Taper 1" "Morse Taper 2" "Morse Taper 3" "Morse Taper 4" "Morse Taper 5" "Morse Taper 6"
+           OPTIONS_IDS    "%"  "<none>"  "100"         "110"          "120"         "130"         "140"         "150"         "300"             "310"            "320"           "330"            "340"             "350"            "500"            "510"         "520"           "530"           "540"           "550"            "560" 
+           DIALOG_NAME "Holding System"
+           RSET_NAME   "Holding System"
+        }
+               
+        DB_ALIAS  HolderDes
+        {
+           DB_ID        HLDDES
+           DB_ID_TYPE   s
+           DIALOG_NAME "Holder"
+           RSET_NAME   "Holder"
+        }               
+
+        DB_ALIAS  Material
+        {
+           DB_ID        MATREF
+           DB_ID_TYPE   s
+           OPTIONS     "All" "HSS"        "HSS Coated"  "Carbide"    "Carbide Coated" "Carbide (Brazed, Solid)"
+           OPTIONS_IDS  "%"  "TMC0_00001" "TMC0_00006"  "TMC0_00003" "TMC0_00004"     "TMC0_00002"
+        }
+
+        DB_ALIAS  MaterialDes
+        {
+           DB_ID        MATDES
+           DB_ID_TYPE   s
+           DIALOG_NAME "Material"
+           RSET_NAME   "Material"
+        }
+
+        DB_ALIAS  HolderRef
+        {
+           DB_ID        HLDREF
+           DB_ID_TYPE   s
+           DIALOG_NAME  "Holder Reference"
+           RSET_NAME    "Holder Reference"
+        }
+
+        DB_ALIAS  TrackpointRef
+        {
+           DB_ID        TPREF
+           DB_ID_TYPE   s
+           DIALOG_NAME  "Trackpoint Reference"
+           RSET_NAME    "Trackpoint Reference"
+        }
+
+#######################################################################
+
+
+        DB_ALIAS  Diameter 
+        {
+           DB_ID        DIA
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(D) Diameter"
+           RSET_NAME "(D) Diameter"
+        }
+
+        DB_ALIAS  Diameter1 
+        {
+           DB_ID        DIA
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(D1) Diameter"
+           RSET_NAME "(D1) Diameter"
+        }
+
+        DB_ALIAS   Diameter2
+        {
+           DB_ID        D2 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(D2) Diameter 2"
+           RSET_NAME "(D2) Diameter 2"
+        }
+
+        DB_ALIAS  StepDiameter1 
+        {
+           DB_ID        SD1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(D2) Step 1 Diameter"
+           RSET_NAME "(D2) Step 1 Diameter"
+        }
+
+        DB_ALIAS  StepDiameter2 
+        {
+           DB_ID        SD2
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Step 2 Diameter"
+           RSET_NAME "Step 2 Diameter"
+        }
+        
+        DB_ALIAS  TipLength
+        {
+           DB_ID       TIPLEN
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(L1) Tip Length"
+           RSET_NAME "(L1) Tip Length"
+        }
+
+        DB_ALIAS  StepLength1
+        {
+           DB_ID       SL1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Step 1 Length"
+           RSET_NAME "Step 1 Length"
+        }
+        
+
+        DB_ALIAS  StepAngle1
+        {
+           DB_ID       SA1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Step 1 Angle"
+           RSET_NAME "Step 1 Angle"
+        }
+
+        DB_ALIAS  StepAngle2
+        {
+           DB_ID       SA2
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Step 2 Angle"
+           RSET_NAME "Step 2 Angle"
+        }
+        
+        DB_ALIAS  StepRadius1
+        {
+           DB_ID       SR1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(SR1) Step Radius1"
+           RSET_NAME "(SR1) Step Radius1"
+        }
+        
+        DB_ALIAS  StepRadius2
+        {
+           DB_ID       SR2
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(SR2) Step Radius2"
+           RSET_NAME "(SR2) Step Radius2"
+        }
+
+        DB_ALIAS  FluteLength
+        {
+           DB_ID       FLEN 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(FL) Flute Length"
+           RSET_NAME "(FL) Flute Length"
+        }
+
+        DB_ALIAS  TipDiameter
+        {
+           DB_ID       DIA2 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(TD) Tip Diameter"
+           RSET_NAME "(TD) Tip Diameter"
+        }
+        
+        DB_ALIAS  PilotDia
+        {
+           DB_ID       PD 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(PD) Pilot Diameter"
+           RSET_NAME "(PD) Pilot Diameter"
+        }
+
+        DB_ALIAS  PilotLength
+        {
+           DB_ID       PL 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(PL) Pilot Length"
+           RSET_NAME "(PL) Pilot Length"
+        }         
+                      
+        DB_ALIAS  ShankDia
+        {
+           DB_ID       SDIA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(ND) Neck Diameter"
+           RSET_NAME   "(ND) Neck Diameter"
+        }
+        
+        DB_ALIAS  NumberOfFlutes
+        {
+           DB_ID       FN 
+           DB_ID_TYPE   i	
+           DIALOG_NAME "Number of Flutes"
+           RSET_NAME   "Number of Flutes"
+        }
+
+        DB_ALIAS  FluteDirection
+        {
+           DB_ID       FD 
+           DB_ID_TYPE   s
+           OPTIONS     "right" "left"
+           OPTIONS_IDS "R" "L"
+           DIALOG_NAME "Flute Direction"
+           RSET_NAME   "Flute Direction"
+        }
+
+        DB_ALIAS  CorRadMill
+        {
+           DB_ID       COR1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R) Corner Radius"
+           RSET_NAME   "(R) Corner Radius"
+        }
+
+        DB_ALIAS  CorRadDrill
+        {
+           DB_ID       COR1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(CR) Corner Radius"
+           RSET_NAME   "(CR) Corner Radius"
+        }
+
+        DB_ALIAS  CorRad1
+        {
+           DB_ID       COR1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R1) Corner Radius"
+           RSET_NAME   "(R1) Corner Radius"
+        }
+
+        DB_ALIAS  ShoulderDistance
+        {
+           DB_ID       SD
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(SD) Shoulder Distance"
+           RSET_NAME   "(SD) Shoulder Distance"
+        }
+
+        DB_ALIAS  ChamferLength
+        {
+            DB_ID      CHAMFERLEN
+            DB_ID_TYPE d
+            DIALOG_NAME "(C) Chamfer Length"
+            RSET_NAME   "(C) Chamfer Length"
+        }
+
+        DB_ALIAS  ChamferAngle
+        {
+            DB_ID      TAPA
+            DB_ID_TYPE d
+            DIALOG_NAME "(B) Chamfer Angle"
+            RSET_NAME   "(B) Chamfer Angle"
+        }
+
+        DB_ALIAS  LowerRadius
+        {
+           DB_ID       COR1
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R1) Lower Radius"
+           RSET_NAME   "(R1) Lower Radius"
+        }
+
+        DB_ALIAS Designation
+        {
+           DB_ID       DESI
+           DB_ID_TYPE   s	
+           DIALOG_NAME "Designation"
+           RSET_NAME   "Designation"
+        }
+
+        DB_ALIAS HelixAngle
+        {
+           DB_ID        HA
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Helix Angle"
+           RSET_NAME   "Helix Angle"
+        }
+
+#   For Turning
+        DB_ALIAS  NoseRadius
+        {
+           DB_ID       NOSR 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R) Nose Radius"
+           RSET_NAME   "(R) Nose Radius"
+        }
+
+
+
+
+        DB_ALIAS  NoseAngle
+        {
+           DB_ID     NOSA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(A) Nose Angle"
+           RSET_NAME   "(A) Nose Angle"	
+        }
+
+
+# Drill
+        DB_ALIAS  PointAngle
+        {
+           DB_ID     PNTA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(PA) Point Angle"
+           RSET_NAME   "(PA) Point Angle"	
+        }
+
+        DB_ALIAS  PointLength
+        {
+           DB_ID     PNTL 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(PL) Point Length"
+           RSET_NAME   "(PL) Point Length"	
+        }
+
+# For Angle Tool Cutters
+        DB_ALIAS  Angle
+        {
+           DB_ID       -10070 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(B) Angle"
+           RSET_NAME   "(B) Angle"
+
+        }
+
+
+# For T Cutter
+        DB_ALIAS  ShankDiameter
+        {
+           DB_ID       SDIA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(ND) Neck Diameter"
+           RSET_NAME   "(ND) Neck Diameter"
+        }
+
+
+        DB_ALIAS  CornerRadius1
+        {
+           DB_ID     LCOR
+           DB_ID_TYPE   d
+           DIALOG_NAME "Corner Radius 1"
+           RSET_NAME   "Corner Radius 1"
+        }
+
+        DB_ALIAS  CornerRadius2
+        {
+           DB_ID     UCOR 
+           DB_ID_TYPE   d
+           DIALOG_NAME "Corner Radius 2"
+           RSET_NAME   "Corner Radius 2"
+        }
+
+# Barrel
+       DB_ALIAS  BarrelRadius
+        {
+           DB_ID     BRAD 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(R) Barrel Radius"
+           RSET_NAME   "(R) Barrel Radius"
+        }
+
+# Taper Barrel
+        DB_ALIAS  WorkingAngle
+        {
+           DB_ID     WRANG 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(A/2) Working Angle"
+           RSET_NAME   "(A/2) Working Angle"
+        }
+
+# For Disc Milling
+###       DB_ALIAS  InsertWidth
+###        {
+###           DB_ID     -2615 
+###           DB_ID_TYPE   d	
+###           DIALOG_NAME "Insert Width"
+###           RSET_NAME   "Insert Width"
+###        }
+
+# For 5 Parameter Milling Tool
+       DB_ALIAS  TaperAngleB
+        {
+           DB_ID     TAPA
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(B) Taper Angle"
+           RSET_NAME   "(B) Taper Angle"
+        }
+
+        DB_ALIAS  ReliefDiameter
+        {
+           DB_ID     RD
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(RD) Relief Diameter"
+           RSET_NAME   "(RD) Relief Diameter"
+        }
+
+
+# For 7 Parameter Milling Tool
+       DB_ALIAS  TaperAngle
+        {
+           DB_ID     TAPA
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Taper Angle"
+           RSET_NAME   "Taper Angle"
+        }
+
+
+       DB_ALIAS  Origin_1_X
+        {
+           DB_ID     CX1
+           DB_ID_TYPE   d	
+        }
+
+       DB_ALIAS  Origin_1_Y
+        {
+           DB_ID     CY1
+           DB_ID_TYPE   d	
+        }
+
+# 10 Parameter Milling
+       DB_ALIAS  Origin_2_X
+        {
+           DB_ID     CX2
+           DB_ID_TYPE   d	
+        }
+
+       DB_ALIAS  Origin_2_Y
+        {
+           DB_ID     CY2
+           DB_ID_TYPE   d	
+        }
+
+# Fixed Diameter Drilling
+       DB_ALIAS  PilotDiameter
+        {
+           DB_ID     -11101
+           DB_ID_TYPE   d	
+           DIALOG_NAME "Pilot Diameter"
+           RSET_NAME   "Pilot Diameter"
+        }
+
+# Step Hole Drilling
+       DB_ALIAS  Diameter_1
+        {
+           DB_ID     -10011
+           DB_ID_TYPE   d	
+        }
+
+       DB_ALIAS  Diameter_2
+        {
+           DB_ID     -10012
+           DB_ID_TYPE   d	
+        }
+
+       DB_ALIAS  Angle_1
+        {
+           DB_ID     -10071
+           DB_ID_TYPE   d	
+        }
+
+       DB_ALIAS  Angle_2
+        {
+           DB_ID     -10071
+           DB_ID_TYPE   d	
+        }
+
+
+        DB_ALIAS  Module 
+        {
+           DB_ID        GENIUS_MODULE
+           DB_ID_TYPE   s	
+        }
+
+
+
+# Center Drill
+       DB_ALIAS  Diam_1
+        {
+           DB_ID     DIA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(D1) Diameter 1"
+           RSET_NAME   "(D1) Diameter 1"		
+        }
+
+       DB_ALIAS  Diam_2
+        {
+           DB_ID     DIA2
+           DB_ID_TYPE   d
+           DIALOG_NAME "(D2) Diameter 2"
+           RSET_NAME   "(D2) Diameter 2"
+        }
+        
+        
+
+
+# Turning
+        DB_ALIAS  InsertNoseAngle
+        {
+           DB_ID     NOSA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(A) Nose Angle"
+           RSET_NAME   "(A) Nose Angle"	
+        }
+        DB_ALIAS  CuttingEdgeLength
+        {
+           DB_ID     CLEN 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(CL) Cut Edge Length"
+           RSET_NAME   "(CL) Cut Edge Length"	
+        }
+#       same as above without (CL)
+        DB_ALIAS  CutEdgeLength
+        {
+           DB_ID     CLEN 
+           DB_ID_TYPE   d
+           DIALOG_NAME "Cut Edge Length"
+           RSET_NAME   "Cut Edge Length"	
+        }
+
+        DB_ALIAS  InscribedCircle
+        {
+           DB_ID     IC 
+           DB_ID_TYPE   d
+           DIALOG_NAME "Inscribed Circle"
+           RSET_NAME   "Inscribed Circle"	
+        }
+
+
+
+
+        DB_ALIAS  OrientAng
+        {
+           DB_ID     OA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(OA) Orient. Angle"
+           RSET_NAME   "(OA) Orient. Angle"	
+        }
+
+        DB_ALIAS  ButtonDia
+        {
+           DB_ID     BTDIA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(D) Diameter"
+           RSET_NAME   "(D) Diameter"	
+        }
+
+
+
+        DB_ALIAS  MinBoringDia
+        {
+           DB_ID     MNBD
+           DB_ID_TYPE   d
+           DIALOG_NAME "Min Boring Diameter"
+           RSET_NAME   "Min Boring Diameter"	
+        }
+
+        DB_ALIAS  MaxToolReach
+        {
+           DB_ID     MXTR 
+           DB_ID_TYPE   d
+           DIALOG_NAME "Max Tool Reach"
+           RSET_NAME   "Max Tool Reach"	
+        }
+
+        DB_ALIAS  Thickness
+        {
+           DB_ID     THCK
+           DB_ID_TYPE   d
+           DIALOG_NAME "Thickness"
+           RSET_NAME   "Thickness"
+        }
+
+        DB_ALIAS  ThicknessType
+        {
+           DB_ID     THCT
+           DB_ID_TYPE   s
+           OPTIONS      "All" "01" "T1" "02" "T2" "03" "T3" "04" "05" "06" "07" "09" "11" "12" "??"
+           OPTIONS_IDS   "%"  "01" "T1" "02" "T2" "03" "T3" "04" "05" "06" "07" "09" "11" "12" "User"
+           DIALOG_NAME "Thickness Type"
+           RSET_NAME   "Thickness Type"
+        }
+
+        DB_ALIAS  ReliefAngle
+        {
+           DB_ID     RELA
+           DB_ID_TYPE   d
+           DIALOG_NAME "Relief Angle"
+           RSET_NAME   "Relief Angle"
+        }
+
+        DB_ALIAS  ReliefAngleType
+        {
+           DB_ID     RELT
+           DB_ID_TYPE   s
+           OPTIONS      "All" "A" "B" "C" "D" "E" "F" "G" "N" "P" "O"
+           OPTIONS_IDS   "%"  "A" "B" "C" "D" "E" "F" "G" "N" "P" "O"
+           DIALOG_NAME "Thickness Type"
+           RSET_NAME   "Thickness Type"
+        }
+
+
+# Grooving
+        DB_ALIAS  InsertWidth
+        {
+           DB_ID     IW 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(IW) Insert Width"
+           RSET_NAME   "(IW) Insert Width"	
+        }
+        DB_ALIAS  SideAngle
+        {
+           DB_ID     LSA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(LA/RA) Side Angle"
+           RSET_NAME   "(LA/RA) Side Angle"	
+        }
+#       Same as above but (SA) instead of (LA/RA)
+        DB_ALIAS  SideAngle2
+        {
+           DB_ID     LSA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(SA) Side Angle"
+           RSET_NAME   "(SA) Side Angle"	
+        }
+
+        DB_ALIAS  LeftSang
+        {
+           DB_ID     LSA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(LA) Left Angle"
+           RSET_NAME   "(LA) Left Angle"
+        }
+
+        DB_ALIAS  RightSang
+        {
+           DB_ID     RSA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(RA) Right Angle"
+           RSET_NAME   "(RA) Right Angle"
+        }
+
+        DB_ALIAS  CornerRadius
+        {
+           DB_ID       COR 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R) Radius"
+           RSET_NAME   "(R) Radius"
+        }
+
+#    Needed for user defined grooving
+        DB_ALIAS  Lrad
+        {
+           DB_ID       COR 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(LR) Left Radius"
+           RSET_NAME   "(LR) Left Radius"
+        }
+
+        DB_ALIAS  Rrad
+        {
+           DB_ID       COR2 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(RR) Right Radius"
+           RSET_NAME   "(RR) Right Radius"
+        }
+
+
+
+
+# Profiling
+        DB_ALIAS  SideAnglePF
+        {
+           DB_ID     LSA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(SA) Side Angle"
+           RSET_NAME   "(SA) Side Angle"	
+        }
+
+        DB_ALIAS  Radius
+        {
+           DB_ID       RAD 
+           DB_ID_TYPE   d	
+           DIALOG_NAME "(R) Radius"
+           RSET_NAME   "(R) Radius"
+
+        }
+
+
+# Parting
+        DB_ALIAS  TipAngleGrv
+        {
+           DB_ID     TIPA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(TA) Tip Angle"
+           RSET_NAME   "(TA) Tip Angle"	
+        }
+
+        DB_ALIAS  PartType
+        {
+           DB_ID     PSET
+           DB_ID_TYPE   s
+           OPTIONS       "Right" "Left"
+           OPTIONS_IDS   "R" "L"
+           DIALOG_NAME "Type"
+           RSET_NAME   "Type"
+        }
+
+
+# Threading
+        DB_ALIAS  ThreadShapeTurn
+        {
+           DB_ID     THRDS
+           DB_ID_TYPE   s
+           OPTIONS      "All" "ISO Metric 60" "Whitworth BSW 55" "ISO Metric Trapez 30" "Round 30" "UNC Un. Coarse Thread 60" "UNF Un. Fine Thread 60" "NPT Taper-Pipe Thread"
+           OPTIONS_IDS   "%"    "01"               "02"                "03"              "04"         "05"                                "06"                            "07"
+           DIALOG_NAME "(IS) Insert Shape"
+           RSET_NAME   "(IS) Insert Shape"
+
+        }
+
+        DB_ALIAS  ThreadShapeDrill
+        {
+           DB_ID     THRDS
+           DB_ID_TYPE   s
+           OPTIONS      "All" "ISO Metric 60" "Whitworth BSW 55" "ISO Metric Trapez 30" "Round 30" "UNC Un. Coarse Thread 60" "UNF Un. Fine Thread 60" "NPT Taper-Pipe Thread" "Partial Profile 60" "Partial Profile 55"
+           OPTIONS_IDS   "%"     "01"               "02"                "03"              "04"         "05"                                "06"                            "07"         "21"              "22" 
+           DIALOG_NAME "(IS) Thread Shape"
+           RSET_NAME   "(IS) Thread Shape"
+        }
+
+        DB_ALIAS  ThreadDesTurn
+        {
+           DB_ID     THRDES
+           DB_ID_TYPE   s
+           DIALOG_NAME "(IS) Insert Shape"
+           RSET_NAME   "(IS) Insert Shape"
+        }
+
+        DB_ALIAS  ThreadDesDrill
+        {
+           DB_ID     THRDES
+           DB_ID_TYPE   s
+           DIALOG_NAME "(IS) Thread Shape"
+           RSET_NAME   "(IS) Thread Shape"
+        }
+
+        DB_ALIAS  Pitch
+        {
+           DB_ID     PIT
+           DB_ID_TYPE   d
+           DIALOG_NAME "Pitch"
+           RSET_NAME   "Pitch"
+
+        }
+
+        DB_ALIAS  LeftAng
+        {
+           DB_ID     LA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(LA) Left Angle"
+           RSET_NAME   "(LA) Left Angle"
+        }
+
+        DB_ALIAS  RightAng
+        {
+           DB_ID     RA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(RA) Right Angle"
+           RSET_NAME   "(RA) Right Angle"
+        }
+
+        DB_ALIAS  NoseWidth
+        {
+           DB_ID     NOSW
+           DB_ID_TYPE   d
+           DIALOG_NAME "(NW) Nose Width"
+           RSET_NAME   "(NW) Nose Width"
+        }
+
+
+        DB_ALIAS  InsertLength
+        {
+           DB_ID     CLEN
+           DB_ID_TYPE   d
+           DIALOG_NAME "(IL) Insert Length"
+           RSET_NAME   "(IL) Insert Length"
+
+        }
+
+# Turning Form Tool
+        DB_ALIAS  MinFacingDiam
+        {
+           DB_ID     MNFD
+           DB_ID_TYPE   d
+           DIALOG_NAME "Minimum Facing Diameter"
+           RSET_NAME   "Minimum Facing Diameter"	
+        }
+
+        DB_ALIAS  MaxFacingDiam
+        {
+           DB_ID     MXFD
+           DB_ID_TYPE   d
+           DIALOG_NAME "Maximum Facing Diameter"
+           RSET_NAME   "Maximum Facing Diameter"	
+        }
+
+        DB_ALIAS  InitialEdgeAngle
+        {
+           DB_ID     IEA
+           DB_ID_TYPE   d
+           DIALOG_NAME "Initial Edge Angle"
+           RSET_NAME   "Initial Edge Angle"
+        }
+
+        DB_ALIAS  InitialEdgeLength
+        {
+           DB_ID     IEL
+           DB_ID_TYPE   d
+           DIALOG_NAME "Initial Edge Length"
+           RSET_NAME   "Initial Edge Length"
+        }
+
+# tapered shank tool
+        DB_ALIAS  TaperedSDia
+        {
+            DB_ID        TSDIA
+            DB_ID_TYPE   d
+            DIALOG_NAME  "(SD) Shank Diameter"
+            RSET_NAME    "(SD) Shank Diameter"
+        }
+
+        DB_ALIAS  TaperedSLEN
+        {
+            DB_ID        TSLEN
+            DB_ID_TYPE   d
+            DIALOG_NAME  "(SL) Shank Length"
+            RSET_NAME    "(SL) Shank Length"
+        }
+
+        DB_ALIAS  TaperedSTLEN
+        {
+            DB_ID        TSTLEN
+            DB_ID_TYPE   d
+            DIALOG_NAME  "(STL) Shank Taper Length"
+            RSET_NAME    "(STL) Shank Taper Length"
+        }
+
+# For Spherical Mill
+        DB_ALIAS  NeckDiameter
+        {
+           DB_ID       SDIA 
+           DB_ID_TYPE   d
+           DIALOG_NAME "(ND) Neck Diameter"
+           RSET_NAME   "(ND) Neck Diameter"
+        }
+
+        DB_ALIAS  BellAngle
+        {
+            DB_ID       BANG
+            DB_ID_TYPE  d
+            DIALOG_NAME "(BA) Bell Angle"
+            RSET_NAME   "(BA) Bell Angle"
+        }
+
+        DB_ALIAS  BellDiameter
+        {
+            DB_ID       BDIA
+            DB_ID_TYPE  d
+            DIALOG_NAME "(BD) Bell Diameter"
+            RSET_NAME   "(BD) Bell Diameter"
+        }
+
+        DB_ALIAS  TaperDiaDistance
+        {
+            DB_ID       TDD
+            DB_ID_TYPE  d
+            DIALOG_NAME "(TDD) Taper Diameter Distance"
+            RSET_NAME   "(TDD) Taper Diameter Distance"
+        }
+
+        DB_ALIAS CoolantThrough
+        {
+            DB_ID       CTH
+            DB_ID_TYPE  i
+            DIALOG_NAME "Coolant Through"
+            RSET_NAME   "Coolant Through"
+        }
+
+        DB_ALIAS  ZMount
+        {
+            DB_ID       ZMOUNT
+            DB_ID_TYPE  d
+            DIALOG_NAME "Z Mount"
+            RSET_NAME   "Z Mount"
+        }
+
+        DB_ALIAS  XMount
+        {
+            DB_ID       XMOUNT
+            DB_ID_TYPE  d
+            DIALOG_NAME "X Mount"
+            RSET_NAME   "X Mount"
+        }
+
+        DB_ALIAS  YMount
+        {
+            DB_ID       YMOUNT
+            DB_ID_TYPE  d
+            DIALOG_NAME "Y Mount"
+            RSET_NAME   "Y Mount"
+        }
+
+        DB_ALIAS  MaxToolDepth
+        {
+           DB_ID     MXDP
+           DB_ID_TYPE   d
+           DIALOG_NAME "Max Tool Depth"
+           RSET_NAME   "Max Tool Depth"	
+        }
+
+        DB_ALIAS RampAngle
+        {
+            DB_ID          RAMPANGLE
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Ramp Angle"
+            RSET_NAME      "Ramp Angle"
+        }
+        
+        DB_ALIAS HelicalDia
+        {
+            DB_ID          HELICALDIA
+            DB_ID_TYPE     s
+            DIALOG_NAME    "Helical Diameter"
+            RSET_NAME      "Helical Diameter"
+        }
+        
+        DB_ALIAS MinRampLen
+        {
+            DB_ID          MINRAMPLEN
+            DB_ID_TYPE     s
+            DIALOG_NAME    "Min Ramp Length"
+            RSET_NAME      "Min Ramp Length"
+        }
+
+        DB_ALIAS MaxCutWidth
+        {
+            DB_ID          MAXCUTWIDTH
+            DB_ID_TYPE     s
+            DIALOG_NAME    "Max Cut Width"
+            RSET_NAME      "Max Cut Width"
+        }
+
+# For Laser Tool
+        DB_ALIAS NozzleDiameter
+        {
+            DB_ID          ND
+            DB_ID_TYPE     d
+            DIALOG_NAME    "(ND) Nozzle Diameter"
+            RSET_NAME      "(ND) Nozzle Diameter"
+        }
+
+        DB_ALIAS NozzleLength
+        {
+            DB_ID          NL
+            DB_ID_TYPE     d
+            DIALOG_NAME    "(NL) Nozzle Length"
+            RSET_NAME      "(NL) Nozzle Length"
+        }
+
+        DB_ALIAS NozzleTipDiameter
+        {
+            DB_ID          NTD
+            DB_ID_TYPE     d
+            DIALOG_NAME    "(NTD) Nozzle Tip Diameter"
+            RSET_NAME      "(NTD) Nozzle Tip Diameter"
+        }
+
+        DB_ALIAS NozzleTaperLength
+        {
+            DB_ID          NTL
+            DB_ID_TYPE     d
+            DIALOG_NAME    "(NTL) Nozzle Taper Length"
+            RSET_NAME      "(NTL) Nozzle Taper Length"
+        }
+
+        DB_ALIAS FocalDistance
+        {
+            DB_ID          FDIS
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Focal Distance"
+            RSET_NAME      "Focal Distance"
+        }
+
+        DB_ALIAS FocalDiameter
+        {
+            DB_ID          FDIA
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Focal Diameter"
+            RSET_NAME      "Focal Diameter"
+        }
+
+        DB_ALIAS MinimumPower
+        {
+            DB_ID          MINP
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Minimum Power"
+            RSET_NAME      "Minimum Power"
+        }
+
+        DB_ALIAS MaximumPower
+        {
+            DB_ID          MAXP
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Maximum Power"
+            RSET_NAME      "Maximum Power"
+        }
+
+        DB_ALIAS StandOffDist
+        {
+            DB_ID          SDIST
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Standoff Distance"
+            RSET_NAME      "Standoff Distance"
+        }
+
+        DB_ALIAS WorkingDiameter
+        {
+            DB_ID          WDIA
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Working Diameter"
+            RSET_NAME      "Working Diameter"
+        }
+
+        DB_ALIAS WorkingRange
+        {
+            DB_ID          WRANGE
+            DB_ID_TYPE     d
+            DIALOG_NAME    "Working Range"
+            RSET_NAME      "Working Range"
+        }
+
+#For Back Counter Sink Tools
+        DB_ALIAS  MinHoleDiameter
+        {
+           DB_ID       MHD
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MHD) Min Hole Diameter"
+           RSET_NAME "(MHD) Min Hole Diameter"
+        }
+
+        DB_ALIAS  InsertSize
+        {
+           DB_ID       IS
+           DB_ID_TYPE   d
+           DIALOG_NAME "(IS) Insert Size"
+           RSET_NAME   "(IS) Insert Size"
+        }
+
+#For Boring Bar
+        DB_ALIAS  FrontInsertLength
+        {
+           DB_ID       FIL
+           DB_ID_TYPE   d
+           DIALOG_NAME "(FIL) Front Insert Length"
+           RSET_NAME   "(FIL) Front Insert Length"
+        }
+
+        DB_ALIAS  BackInsertLength
+        {
+           DB_ID       BIL
+           DB_ID_TYPE   d
+           DIALOG_NAME "(BIL) Back Insert Length"
+           RSET_NAME   "(BIL) Back Insert Length"
+        }
+
+        DB_ALIAS  LeadAngle
+        {
+           DB_ID       LA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(LA) Lead Angle"
+           RSET_NAME   "(LA) Lead Angle"
+        }
+
+        DB_ALIAS  InsertAngle
+        {
+           DB_ID       IA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(IA) Insert Angle"
+           RSET_NAME   "(IA) Insert Angle"
+        }
+
+        DB_ALIAS  ReliefLength
+        {
+           DB_ID       RL
+           DB_ID_TYPE   d
+           DIALOG_NAME "(RL) Relief Length"
+           RSET_NAME   "(RL) Relief Length"
+        }
+
+        DB_ALIAS  ReliefWidth
+        {
+           DB_ID       RW
+           DB_ID_TYPE   d
+           DIALOG_NAME "(RW) Relief Width"
+           RSET_NAME   "(RW) Relief Width"
+        }
+
+#For Chamfer Boring Bar
+        DB_ALIAS  LowerCornerRadius
+        {
+           DB_ID       COR1
+           DB_ID_TYPE   d
+           DIALOG_NAME "(R1) Lower Corner Radius"
+           RSET_NAME   "(R1) Lower Corner Radius"
+        }
+
+        DB_ALIAS  UpperCornerRadius
+        {
+           DB_ID       COR2
+           DB_ID_TYPE   d
+           DIALOG_NAME "(R2) Upper Corner Radius"
+           RSET_NAME   "(R2) Upper Corner Radius"
+        }
+ #For Fused Deposition Tool
+        DB_ALIAS  ExtrusionDia
+        {
+           DB_ID       EDIA
+           DB_ID_TYPE   d
+           DIALOG_NAME "(ED) Extrusion Diameter"
+           RSET_NAME   "(ED) Extrusion Diameter"
+        }
+
+        DB_ALIAS  NozzleOrificeDia
+        {
+           DB_ID       NOD
+           DB_ID_TYPE   d
+           DIALOG_NAME "(NOD) Nozzle Orifice Diameter"
+           RSET_NAME   "(NOD) Nozzle Orifice Diameter"
+        }
+
+        DB_ALIAS  MinBeadWidth
+        {
+           DB_ID       MINW
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MINW) Min Bead Width"
+           RSET_NAME   "(MINW) Min Bead Width"
+        }
+
+        DB_ALIAS  MaxBeadWidth
+        {
+           DB_ID       MAXW
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MAXW) Max Bead Width"
+           RSET_NAME   "(MAXW) Max Bead Width"
+        }
+
+        DB_ALIAS  MinBeadHeight
+        {
+           DB_ID       MINH
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MINH) Min Bead Height"
+           RSET_NAME   "(MINH) Min Bead Height"
+        }
+
+        DB_ALIAS  MaxBeadHeight
+        {
+           DB_ID       MAXH
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MAXH) Max Bead Height"
+           RSET_NAME   "(MAXH) Max Bead Height"
+        }
+
+        DB_ALIAS  MinExtruRate
+        {
+           DB_ID       MINER
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MINER) Min Extrusion Rate"
+           RSET_NAME   "(MINER) Min Extrusion Rate"
+        }
+
+        DB_ALIAS  MaxExtruRate
+        {
+           DB_ID       MAXER
+           DB_ID_TYPE   d
+           DIALOG_NAME "(MAXER) Max Extrusion Rate"
+           RSET_NAME   "(MAXER) Max Extrusion Rate"
+        }
+###################################################################
+#################################################################
+
+
+LIBREF     libref
+
+
+#########################################################################
+#                      The Class Hierarchy                              #
+#########################################################################
+
+CLASS TOOL
+{
+   TYPE QRY
+   QUERY  "[DB(libref)] != [0]"
+   DIALOG libref
+   RSET   libref Descr MaterialDes 
+   UI_NAME "Tool"
+
+   CLASS MILLING
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [02]"
+      DIALOG libref Diameter TaperedSDia Descr
+      RSET   libref Descr Diameter TaperedSDia MaterialDes
+      UI_NAME "Milling"
+
+      CLASS END_MILL_NON_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [01]"
+        FILE "qry=shank_mill_schema;rset=shank_mill_schema;" 
+        DIALOG libref Diameter FluteLength CorRadMill TaperAngleB TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength CorRadMill TaperAngleB TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "End Mill (non indexable)"
+      }
+
+      CLASS END_MILL_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [02]"
+        FILE "qry=end_mill_inx_schema;rset=end_mill_inx_schema;" 
+        DIALOG libref Diameter FluteLength CorRadMill TaperAngleB TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength CorRadMill TaperAngleB TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "End Mill (indexable)"
+      }
+
+      CLASS BALL_MILL_NON_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [03]"
+        FILE "qry=die_sinking_mill_schema;rset=die_sinking_mill_schema;"
+        DIALOG libref Diameter FluteLength TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Ball Mill (non indexable)"
+      }
+
+      CLASS CHAMFER_MILL_NON_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [05]"
+        FILE "qry=chamfermillingtool.bmp;rset=chamfermillingtool.bmp;" 
+        DIALOG libref Diameter FluteLength ChamferLength ChamferAngle LowerRadius TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength ChamferLength ChamferAngle LowerRadius TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Chamfer Mill (non indexable)"
+      }
+
+      CLASS SPHERICAL_MILL_NON_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [06]"
+        FILE "qry=sphericalmillingtool.bmp;rset=sphericalmillingtool.bmp;" 
+        DIALOG libref Diameter NeckDiameter TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter NeckDiameter TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Spherical Mill (non indexable)"
+      }
+    
+      CLASS FACE_MILL_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [12]"
+        FILE "qry=face_mill_inx_schema;rset=face_mill_inx_schema;"
+        DIALOG libref Diameter Diameter2 FluteLength Material Holder Descr
+        RSET   libref Descr Diameter Diameter2 FluteLength MaterialDes HolderDes HolderRef
+        UI_NAME "Face Mill (indexable)"
+      }
+
+      CLASS T_SLOT_MILL_NON_INDEXABLE 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [21]"
+        FILE "qry=t_slot_mill_schema;rset=t_slot_mill_schema;" 
+        DIALOG libref Diameter ShankDiameter TaperedSDia FluteLength Material Holder Descr
+        RSET   libref Descr Diameter ShankDiameter TaperedSDia FluteLength MaterialDes HolderDes HolderRef
+        UI_NAME "T-Slot Mill (non indexable)"
+      }
+
+      CLASS BARREL_MILL 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [93]"
+        FILE "qry=barrelcutter_dims;rset=barrelcutter_dims" 
+        DIALOG libref Diameter ShankDiameter TaperedSDia FluteLength BarrelRadius Descr
+        RSET   libref Descr Diameter ShankDiameter TaperedSDia FluteLength BarrelRadius HolderRef
+        UI_NAME "Barrel Mill"
+      }
+
+      CLASS UG_5_PARAMETER
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [90]"
+        FILE "qry=n5parammillingtool;rset=n5parammillingtool" 
+        DIALOG libref Diameter FluteLength CorRad1 TaperAngleB TaperedSDia Descr ReliefDiameter ReliefLength
+        RSET   libref Descr Diameter FluteLength CorRad1 TaperAngleB TaperedSDia HolderRef ReliefDiameter ReliefLength
+        UI_NAME "5 Parameter Mill"
+      }
+
+      CLASS UG_7_PARAMETER 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [91]"
+        FILE "qry=param7_mill_schema;rset=param7_mill_schema;" 
+        DIALOG libref Diameter FluteLength TaperAngle TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength TaperAngle TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "7 Parameter Mill"
+      }
+
+      CLASS UG_10_PARAMETER
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [92]"
+        FILE "qry=param10_mill_schema;rset=param10_mill_schema;" 
+        DIALOG libref Diameter FluteLength TaperAngle TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength TaperAngle TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "10 Parameter Mill"
+      }
+      CLASS THREAD_MILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [31]"
+        FILE "qry=thread2_mill_schema.bmp;rset=thread2_mill_schema.bmp;" 
+        DIALOG libref Diameter ShankDia TaperedSDia FluteLength ThreadShapeDrill Pitch  Material  Holder Descr
+        RSET   libref Descr Diameter ShankDia TaperedSDia FluteLength ThreadDesDrill Pitch  MaterialDes HolderDes HolderRef
+        UI_NAME "Thread Mill"
+      }
+      CLASS MILL_FORM
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [51]"
+        FILE "qry=mill_user_defined_schema.bmp;rset=mill_user_defined_schema.bmp;" 
+        DIALOG libref TaperedSDia Material FluteLength Holder Descr
+        RSET   libref Descr TaperedSDia FluteLength HolderRef
+        UI_NAME "Mill Form Tool"
+      }
+      CLASS TANGENT_BARREL_MILL 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [94]"
+        FILE "qry=tangentbarrel_dims;rset=tangentbarrel_dims" 
+        DIALOG libref Diameter ShankDiameter TaperedSDia BarrelRadius Descr
+        RSET   libref Descr Diameter ShankDiameter TaperedSDia BarrelRadius HolderRef
+        UI_NAME "Tangent Barrel Mill"
+      }
+      CLASS TAPER_BARREL_MILL 
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [95]"
+        FILE "qry=taperbarrel_dims;rset=taperbarrel_dims" 
+        DIALOG libref Diameter ShankDiameter TaperedSDia BarrelRadius Descr
+        RSET   libref Descr Diameter ShankDiameter TaperedSDia BarrelRadius HolderRef
+        UI_NAME "Taper Barrel Mill"
+      }
+   }
+
+   CLASS DRILLING
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [03]"
+      DIALOG libref Diameter TaperedSDia Descr
+      RSET   libref Descr Diameter TaperedSDia MaterialDes HolderRef
+      UI_NAME "##01Drilling"
+
+      CLASS TWIST_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [01]"
+        FILE "qry=drillingtool_diagram;rset=drillingtool_diagram;" 
+        DIALOG libref Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia  Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Twist Drill"
+      }
+      
+      CLASS INSERT_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [06]"
+        FILE "qry=drillingtool_diagram;rset=drillingtool_diagram;" 
+        DIALOG libref Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia  Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Insert Drill"
+      }
+
+      CLASS GUN_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [07]"
+        FILE "qry=drillingtool_diagram;rset=drillingtool_diagram;" 
+        DIALOG libref Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Gun Drill"
+      }
+
+      CLASS INDEX_INSERT_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [02]"
+        FILE "qry=drillingtool_diagram;rset=drillingtool_diagram;" 
+        DIALOG libref Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia  Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Indexable Insert Drill"
+      }
+
+      CLASS CORE_DRILL_NON_INDEXABLE
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [03]"
+        FILE "qry=core2_drill_schema;rset=core2_drill_schema;" 
+        DIALOG libref Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Core Drill (non indexable)"
+      }
+
+      CLASS CORE_DRILL_INDEXABLE
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [8]"
+        FILE "qry=core2_drill_inx_schema;rset=core2_drill_inx_schema;" 
+        DIALOG libref Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PointAngle PointLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Core Drill (indexable)"
+      }
+
+      CLASS SPOT_FACING
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [12]"
+        FILE "qry=spot_face_schema;rset=spot_face_schema;" 
+        DIALOG libref Diameter  CorRadDrill TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter  CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Spot Facing"
+      }
+
+      CLASS SPOT_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [21]"
+        FILE "qry=spot_drill_schema;rset=spot_drill_schema;" 
+        DIALOG libref Diameter  PointAngle PointLength TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter  PointAngle PointLength TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Spot Drill"
+      }
+
+      CLASS CENTER_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [22]"
+        FILE "qry=center_drill_schema;rset=center_drill_schema;" 
+        DIALOG libref Diam_1 Diam_2  PointAngle PointLength TaperedSDia BellAngle BellDiameter Material Holder Descr
+        RSET   libref Descr Diam_1 Diam_2 PointAngle PointLength TaperedSDia BellAngle BellDiameter MaterialDes HolderDes HolderRef
+        UI_NAME "Center Drill"
+      }
+
+      CLASS BORE
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [32]"
+        FILE "qry=boring_tool;rset=boring_tool;" 
+        DIALOG libref Diameter ShankDia TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter ShankDia TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Bore"
+      }
+
+      CLASS BORING_BAR
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [33]"
+        FILE "qry=boring_bar_std_schema.bmp;rset=boring_bar_std_schema.bmp;"
+        DIALOG libref Diameter ShankDia PilotDia PilotLength FrontInsertLength LeadAngle CorRadDrill InsertAngle BackInsertLength ReliefLength ReliefWidth
+        RSET   libref Descr Diameter ShankDia PilotDia PilotLength FrontInsertLength LeadAngle CorRadDrill InsertAngle BackInsertLength ReliefLength ReliefWidth
+        UI_NAME "Boring Bar"
+      }
+
+      CLASS CHAMFER_BORING_BAR
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [34]"
+        FILE "qry=boring_bar_chamfer_tool_schema.bmp;rset=boring_bar_chamfer_tool_schema.bmp;"
+        DIALOG libref Diameter ShankDia PilotDia PilotLength LowerCornerRadius FrontInsertLength LeadAngle UpperCornerRadius InsertAngle BackInsertLength ReliefLength ReliefWidth
+        RSET   libref Descr Diameter ShankDia PilotDia PilotLength LowerCornerRadius FrontInsertLength LeadAngle UpperCornerRadius InsertAngle BackInsertLength ReliefLength ReliefWidth
+        UI_NAME "Chamfer Boring Bar"
+      }
+
+      CLASS COUNTER_BORE
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [51]"
+        FILE "qry=counter_bor2_schema;rset=counter_bor2_schema;" 
+        DIALOG libref Diameter FluteLength PilotDia PilotLength CorRadDrill TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength PilotDia PilotLength CorRadDrill TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Counterbore"
+      }
+
+      CLASS COUNTER_SINKING
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [61]"
+        FILE "qry=counter_sink_schema.bmp;rset=counter_sink_schema.bmp;" 
+        DIALOG libref Diameter PointAngle TipDiameter TaperedSDia Material  Holder Descr
+        RSET   libref Descr Diameter PointAngle TipDiameter TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Counter Sinking Tool (non indexable)"
+      }
+
+      CLASS TAP
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [71]"
+        FILE "qry=tapping_schema.bmp;rset=tapping_schema.bmp;" 
+        DIALOG libref Diameter FluteLength ThreadShapeDrill Pitch ShankDia TaperAngleB TaperDiaDistance TaperedSDia Material  Holder Descr
+        RSET   libref Descr Diameter FluteLength ThreadDesDrill Pitch ShankDia TaperAngleB TaperDiaDistance TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "##01Tap"
+      }
+
+      CLASS CHUCKING_REAMER
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [41]"
+        FILE "qry=chucking_reamer_schema;rset=chucking_reamer_schema;" 
+        DIALOG libref Diameter FluteLength ShankDia TaperAngleB TaperDiaDistance TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength ShankDia TaperAngleB TaperDiaDistance TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "Chucking Reamer"
+      }
+
+      CLASS TAPER_REAMER
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [42]"
+        FILE "qry=machine_reamer_schema;rset=machine_reamer_schema;" 
+        DIALOG libref Diameter  FluteLength ShankDia TaperAngleB TaperDiaDistance TaperedSDia  Material Holder Descr
+        RSET   libref Descr Diameter  FluteLength ShankDia TaperAngleB TaperDiaDistance TaperedSDia  MaterialDes HolderDes HolderRef
+        UI_NAME "Taper Reamer"
+      }
+
+      CLASS STEP_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [4]"
+        FILE "qry=step_drill_schema;rset=step_drill_schema;"
+        DIALOG libref Diameter1 PointAngle PointLength TipLength FluteLength TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter PointAngle PointLength TipLength FluteLength TaperedSDia HolderRef
+         MaterialDes HolderDes
+        UI_NAME "Step Drill"
+      }
+
+      CLASS UG_DRILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [90]"
+        FILE "qry=drillingtool_diagram;rset=drillingtool_diagram;" 
+        DIALOG libref Diameter FluteLength PointLength CorRadDrill TaperedSDia Material PointAngle CorRadDrill Descr
+        RSET   libref Descr Diameter FluteLength PointLength CorRadDrill TaperedSDia MaterialDes PointAngle CorRadDrill  HolderRef
+        UI_NAME "##01Drill"
+      }
+
+      CLASS BACK_COUNTER_SINKING
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [63]"
+        FILE "qry=counter_sink_back_schema.bmp;rset=counter_sink_back_schema.bmp;"
+        DIALOG libref Diameter ShankDia MinHoleDiameter InsertSize CorRadDrill
+        RSET   libref Descr Diameter ShankDia MinHoleDiameter InsertSize CorRadDrill HolderRef
+        UI_NAME "Back Countersinking"
+      }
+   }
+
+   CLASS TURNING
+   {
+       TYPE QRY
+       QUERY  "[DB(Type)] == [01]"
+       DIALOG libref Descr
+       RSET   libref Descr MaterialDes
+       UI_NAME "Turning"
+
+       CLASS OD_TURNING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [01]"
+          FILE "qry=outside_turn_schema;rset=outside_turn_schema;" 
+          DIALOG libref NoseRadius InsertNoseAngle  CuttingEdgeLength Material Holder Descr
+          RSET   libref Descr NoseRadius InsertNoseAngle  CuttingEdgeLength MaterialDes HolderDes
+          UI_NAME "OD Turning"
+       } 
+       CLASS ID_TURNING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [02]"
+          FILE "qry=inside_turn_schema;rset=inside_turn_schema;" 
+          DIALOG libref NoseRadius InsertNoseAngle  CuttingEdgeLength MinBoringDia MaxToolReach Material Holder Descr
+          RSET   libref Descr NoseRadius InsertNoseAngle  CuttingEdgeLength MinBoringDia MaxToolReach MaterialDes HolderDes
+          UI_NAME "ID Turning"
+       } 
+       CLASS OD_GROOVING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [11]"
+          FILE "qry=od_groove_schema;rset=od_groove_schema;" 
+          DIALOG libref CornerRadius InsertWidth SideAngle Material Holder Descr
+          RSET   libref Descr CornerRadius InsertWidth SideAngle MaterialDes HolderDes
+          UI_NAME "OD Grooving"
+       } 
+       CLASS ID_GROOVING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [12]"
+          FILE "qry=inside_groove_schema;rset=inside_groove_schema;" 
+          DIALOG libref CornerRadius InsertWidth SideAngle MinBoringDia MaxToolReach Material Holder Descr
+          RSET   libref Descr CornerRadius InsertWidth SideAngle MinBoringDia MaxToolReach MaterialDes HolderDes
+          UI_NAME "ID Grooving"
+       }
+
+       CLASS FACE_GROOVING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [13]"
+          FILE "qry=face_groove_schema;rset=face_groove_schema;" 
+          DIALOG libref CornerRadius InsertWidth SideAngle Material Holder Descr
+          RSET   libref Descr CornerRadius InsertWidth SideAngle MaterialDes HolderDes
+          UI_NAME "Face Grooving"
+       }
+
+       CLASS PARTING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [14]"
+          FILE "qry=outside_groove_schema;rset=outside_groove_schema;" 
+          DIALOG libref PartType CornerRadius InsertWidth  TipAngleGrv SideAngle Material Holder Descr
+          RSET   libref Descr PartType CornerRadius InsertWidth  TipAngleGrv SideAngle MaterialDes HolderDes
+          UI_NAME "##01Parting"
+       } 
+
+       CLASS OD_PROFILING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [21]"
+          FILE "qry=outside_profile_schema.bmp;rset=outside_profile_schema;" 
+          DIALOG libref Radius SideAnglePF  Material Holder Descr
+          RSET   libref Descr Radius SideAnglePF Material  HolderDes
+          UI_NAME "OD Profiling"
+       } 
+
+       CLASS ID_PROFILING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [22]"
+          FILE "qry=inside_profile_schema.bmp;rset=inside_profile_schema;" 
+          DIALOG libref Radius SideAnglePF MinBoringDia MaxToolReach Material Holder Descr
+          RSET   libref Descr Radius SideAnglePF MinBoringDia MaxToolReach Material HolderDes
+          UI_NAME "ID Profiling"
+       }
+
+       CLASS OD_THREADING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [31]"
+          FILE "qry=outside_thread_schema;rset=outside_thread_schema;" 
+          DIALOG libref ThreadShapeTurn Pitch Material Holder Descr
+          RSET   libref Descr ThreadDesTurn Pitch MaterialDes  HolderDes
+          UI_NAME "OD Threading"
+       }
+
+       CLASS ID_THREADING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [32]"
+          FILE "qry=inside_thread_schema;rset=inside_thread_schema;" 
+          DIALOG libref ThreadShapeTurn Pitch Material Holder Descr
+          RSET   libref Descr ThreadDesTurn Pitch MaterialDes  HolderDes
+          UI_NAME "ID Threading"
+       }
+
+
+       CLASS UG_TURNING_STD
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [90]"
+          FILE "qry=turn_x_user;rset=turn_x_user;" 
+          DIALOG libref NoseRadius InsertNoseAngle OrientAng  CutEdgeLength Descr
+          RSET   libref Descr NoseRadius InsertNoseAngle OrientAng  CutEdgeLength 
+          UI_NAME "Turning (Standard)"
+       } 
+
+       CLASS UG_TURNING_BUTTON
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [91]"
+          FILE "qry=turn_r_round;rset=turn_r_round;" 
+          DIALOG libref ButtonDia OrientAng Descr
+          RSET   libref Descr ButtonDia OrientAng
+          UI_NAME "Turning (Button)"
+       } 
+
+       CLASS UG_GROOVING_STD
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [92]"
+          FILE "qry=groove_std_tool;rset=groove_std_tool;" 
+          DIALOG libref CornerRadius InsertWidth SideAngle2 TipAngleGrv  OrientAng Descr
+          RSET   libref Descr CornerRadius InsertWidth SideAngle2 TipAngleGrv OrientAng
+          UI_NAME "Grooving (Standard)"
+       } 
+
+       CLASS UG_GROOVING_FNR
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [93]"
+          FILE "qry=groove_fnr_tool;rset=groove_fnr_tool;" 
+          DIALOG libref InsertWidth SideAnglePF OrientAng Descr
+          RSET   libref Descr InsertWidth SideAnglePF OrientAng
+          UI_NAME "Grooving (Full Nose Radius)"
+       } 
+
+       CLASS UG_GROOVING_RING
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [94]"
+          FILE "qry=groove_rtj_tool;rset=groove_rtj_tool;" 
+          DIALOG libref InsertWidth LeftSang RightSang OrientAng Descr
+          RSET   libref Descr NoseWidth LeftSang RightSang OrientAng
+          UI_NAME "Grooving (Ring Type Joint)"
+       }
+ 
+       CLASS UG_GROOVING_USER
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [95]"
+          FILE "qry=groove_ud_tool;rset=groove_ud_tool;" 
+          DIALOG libref InsertWidth LeftSang RightSang Lrad Rrad TipAngleGrv OrientAng Descr
+          RSET   libref Descr InsertWidth LeftSang RightSang Lrad Rrad TipAngleGrv OrientAng
+          UI_NAME "Grooving (User Defined)"
+       } 
+
+
+       CLASS UG_THREADING_STD
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [96]"
+          FILE "qry=thread_std_tool;rset=thread_std_tool;" 
+          DIALOG libref LeftAng RightAng OrientAng Descr
+          RSET   libref LeftAng RightAng OrientAng
+          UI_NAME "Threading (Standard)"
+       }
+
+       CLASS UG_THREADING_TRAPEZ
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [97]"
+          FILE "qry=thread_trap_tool;rset=thread_trap_tool;" 
+          DIALOG libref LeftAng RightAng NoseWidth OrientAng Descr
+          RSET   libref LeftAng RightAng NoseWidth OrientAng
+          UI_NAME "Threading (Trapez)"
+       }
+ 
+       CLASS TURN_FORM
+       {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [51]"
+          FILE "qry=outside_turn_schema;rset=outside_turn_schema;" 
+          DIALOG libref Material Holder Descr
+          RSET   libref Descr MaterialDes
+          UI_NAME "Turn Form Tool"
+       } 
+   }
+
+   CLASS SOLID
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [04]"
+      DIALOG libref Descr
+      RSET   libref Descr
+      UI_NAME "##95Solid"
+
+      CLASS GENERIC 
+      {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [01]"
+          DIALOG libref Descr
+          RSET   libref Descr
+          UI_NAME "##01Generic"
+      }
+      CLASS PROBE 
+      {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [02]"
+          DIALOG libref Descr
+          RSET   libref Descr
+          UI_NAME "Probe"
+      }
+      CLASS STAMPING
+      {
+          TYPE QRY
+          QUERY "[DB(SubType)] == [04]"
+          FILE "qry=stamping_tool;rset=stamping_tool;"
+          DIALOG libref Descr
+          RSET   libref Descr
+          UI_NAME "Stamping"
+      }
+   }
+   
+   CLASS WEDM
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [06]"
+      DIALOG libref Diameter Descr Material 
+      RSET   libref Diameter Descr MaterialDes
+      UI_NAME "Wire EDM"
+
+     CLASS WIRE
+     {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [01]"
+          FILE "qry=wedm_tool_schema;rset=wedm_tool_schema;" 
+          DIALOG libref Diameter Descr Material Holder
+          RSET   libref Diameter Descr MaterialDes HolderDes HolderRef
+          UI_NAME "Wire"
+     }
+   }
+
+   CLASS LASER
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [05]"
+      DIALOG libref Descr
+      RSET   libref Descr
+      UI_NAME "Laser"
+
+      CLASS STD_LASER
+      {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [01]"
+          FILE "qry=laser_nozzle_schema;rset=laser_nozzle_schema;"
+          DIALOG libref NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength FocalDistance FocalDiameter MinimumPower MaximumPower Holder Descr
+          RSET   libref Descr NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength FocalDistance FocalDiameter MinimumPower MaximumPower HolderDes HolderRef
+          UI_NAME "Trimming Laser"
+      }
+
+      CLASS DEPOSITION_LASER
+      {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [02]"
+          FILE "qry=coaxial_laser_nozzle_schema;rset=coaxial_laser_nozzle_schema;"
+          DIALOG libref NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength FocalDistance FocalDiameter MinimumPower MaximumPower Holder Descr
+          RSET   libref Descr NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength FocalDistance FocalDiameter MinimumPower MaximumPower HolderDes HolderRef
+          UI_NAME "Deposition Laser"
+      }
+	  CLASS HARDENING_LASER
+      {
+          TYPE QRY
+          QUERY "[DB(SubType)] == [03]"
+          FILE "qry=laser_tool;rset=laser_tool;"
+          DIALOG libref Descr
+          RSET   libref Descr
+          UI_NAME "Hardening Laser"
+      }
+   }
+   
+   CLASS ROBOTIC
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [07]"
+      DIALOG libref Descr
+      RSET   libref Descr
+      UI_NAME "Robotic"
+
+      CLASS ROBOTIC_END_MILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [01]"
+        FILE "qry=shank_mill_schema;rset=shank_mill_schema;" 
+        DIALOG libref Diameter FluteLength CorRadMill TaperAngleB TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength CorRadMill TaperAngleB TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "End Effector (End Mill based)"
+      }
+      
+      CLASS ROBOTIC_BALL_MILL
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [03]"
+        FILE "qry=die_sinking_mill_schema;rset=die_sinking_mill_schema;"
+        DIALOG libref Diameter FluteLength TaperedSDia Material Holder Descr
+        RSET   libref Descr Diameter FluteLength TaperedSDia MaterialDes HolderDes HolderRef
+        UI_NAME "End Effector (Ball Mill based)"
+      }
+   }
+   CLASS MULTITOOL
+   {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [08]"
+      FILE "qry=multitool;rset=multitool;"
+      DIALOG libref Descr
+      RSET   libref Descr
+      UI_NAME "Multi Tool"
+      
+      CLASS MULTITOOL_TURN
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [01]"
+        FILE "qry=multitool;rset=multitool;"
+        DIALOG libref Descr
+        RSET   libref Descr 
+        UI_NAME "Multi Tool Turn"
+      }
+
+      CLASS MULTITOOL_DRILL_TURN
+      {
+        TYPE QRY
+        QUERY  "[DB(SubType)] == [02]"
+        FILE "qry=multitool;rset=multitool;"
+        DIALOG libref Descr
+        RSET   libref Descr
+        UI_NAME "Multi Tool Drill Turn"
+      }
+   }
+
+   CLASS FUSED_DEPOSITION
+    {
+      TYPE QRY
+      QUERY  "[DB(Type)] == [09]"
+      FILE "qry=fused_deposition;rset=fused_deposition"
+      DIALOG libref ExtrusionDia NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength NozzleOrificeDia MinBeadWidth MaxBeadWidth MinBeadHeight MaxBeadHeight MinExtruRate MaxExtruRate
+      RSET   libref Descr ExtrusionDia NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength NozzleOrificeDia MinBeadWidth MaxBeadWidth MinBeadHeight MaxBeadHeight MinExtruRate MaxExtruRate
+      UI_NAME "Deposition"
+
+        CLASS FUSED_DEPOSITION_MATERIAL_EXTRUDER
+        {
+          TYPE QRY
+          QUERY  "[DB(SubType)] == [01]"
+          FILE "qry=fused_deposition;rset=fused_deposition"
+          DIALOG libref ExtrusionDia NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength NozzleOrificeDia MinBeadWidth MaxBeadWidth MinBeadHeight MaxBeadHeight MinExtruRate MaxExtruRate 
+          RSET   libref Descr ExtrusionDia NozzleDiameter NozzleLength NozzleTipDiameter NozzleTaperLength NozzleOrificeDia MinBeadWidth MaxBeadWidth MinBeadHeight MaxBeadHeight MinExtruRate MaxExtruRate 
+          UI_NAME "Material Extruder"
+        }
+    }
+}

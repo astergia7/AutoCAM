@@ -1,0 +1,48 @@
+# MULTITOOL_DATABASE.DAT
+##########################################################################
+#
+#   PURPOSE:
+#
+#      This is the database file used for defining multi-tools
+#
+# 
+#
+# The next line causes the on site revision history to be saved. 
+# To prevent this, delete the next line. 
+#    dbc_logname
+#
+###########################################################################
+# The data is organized using the following fields separated by |
+#
+# The following fields are defined for all records
+#
+#  LIBRF           - Unique multi-tool set identifier (library reference of the set)
+#  T               - Type (Class identifier). Currently all 1 which means everything is multi-tool
+#  STYPE           - Subtype.  Not currently used
+#  SEQ             - Sequence number used to order the multi-tools
+#  
+#  CUTTERID    - List of IDs to identify the cutters within the multi-tool
+#  CUTTERLIBRF - List of librefs of objects in the tool_database.dat to identify 
+#                the individual cutters mounted to the multi-tool.  
+#                You can specify all kind of milling, drilling and turning cutters.               
+#
+#-------------------------------------------------------------------------------
+#CLASS MULTITOOL
+FORMAT LIBRF       T STYPE SEQ CUTTERID  CUTTERLIBRF    
+#-------------------------------------------------------------------------------
+DATA | ugt0801_001 | 1 | 0 | 0   |   1 |   ugt0101_2002 
+DATA | ugt0801_001 | 1 | 0 | 1   |   2 |   ugt0101_2001 
+DATA | ugt0801_001 | 1 | 0 | 2   |   3 |   ugt0121_2001 
+#
+DATA | ugt0801_002 | 1 | 0 | 0   |   1 |   ugt0101_2005 
+DATA | ugt0801_002 | 1 | 0 | 1   |   2 |   ugt0101_2006 
+#
+DATA | ugt0801_003 | 1 | 0 | 0   |   1 |   ugt0101_2003 
+DATA | ugt0801_003 | 1 | 0 | 1   |   2 |   ugt0121_2002 
+DATA | ugt0801_003 | 1 | 0 | 2   |   3 |   ugt0101_2004 
+#
+DATA | ugt0802_001 | 1 | 0 | 0   |   1 |   ugt0302_2001 
+DATA | ugt0802_001 | 1 | 0 | 1   |   2 |   ugt0102_2001 
+DATA | ugt0802_001 | 1 | 0 | 2   |   3 |   ugt0102_2002 
+#END_DATA
+

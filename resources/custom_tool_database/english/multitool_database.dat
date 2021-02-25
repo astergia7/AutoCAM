@@ -1,0 +1,41 @@
+# MULTITOOL_DATABASE.DAT
+##########################################################################
+#
+#   PURPOSE:
+#
+#      This is the database file used for defining multi-tools
+#
+# 
+#
+# The next line causes the on site revision history to be saved. 
+# To prevent this, delete the next line. 
+#    dbc_logname
+#
+##########################################################################
+# The data is organized using the following fields separated by |
+#
+# The following fields are defined for all records
+#
+#
+#  LIBRF           - Unique multi-tool set identifier (library reference of the set)
+#  T               - Type (Class identifier). Currently all 1 which means everything is multi-tool
+#  STYPE           - Subtype.  Not currently used
+#  SEQ             - Sequence number used to order the multi-tools
+#  
+#
+# The following fields are defined for multi-tools
+#  CUTTERID    - List of IDs to identify the cutters within the multi-tool
+#  CUTTERLIBRF - List of librefs of objects in the tool_database.dat to identify 
+#                the individual cutters mounted to the multi-tool.  
+#                You can specify all kind of milling, drilling and turning cutters.               
+#  INDXNTCH    - Index Notch, list of rotation angles around the multi-tool axis
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, list of incremental turet rotation angles
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#
+#-------------------------------------------------------------------------------
+#CLASS MULTITOOL
+FORMAT LIBRF       T STYPE SEQ CUTTERID  CUTTERLIBRF      INDXNTCH    TURRETROT
+#-------------------------------------------------------------------------------
+#END_DATA
+#-------------------------------------------------------------------------------

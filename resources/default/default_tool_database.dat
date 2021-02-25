@@ -1,0 +1,2489 @@
+
+#=======================================================================
+#
+#   ASCII Database File   : tool_database.dat
+#   Creation date         : 02/10/03 14:42:04
+#   Unit                  : Metric
+#=======================================================================
+#
+#
+# UG/Library  Tool Data File
+#
+#
+# Format of the  ASCII Data File
+# ------------------------------
+#
+# The ASCII Data File is a list of records. The general structure of
+# a record is:
+#
+#    Record_type Paramaters 
+#
+# There are four record types which are referred to by the following
+# keywords:
+#
+#    # FORMAT DATA CLASS
+#
+# # indicates a comment, the record is ignored.
+#
+# A FORMAT record describes the kind of parameters of the subsequent 
+# DATA records.
+#
+# FORMAT LIBRF      T  ST   DESCR        MATREF     MATDES     HLD     HLDDES         DIA     FLEN  FN  HEI 
+# 
+# This implies that a corresponding DATA record might look like the
+# following example:
+#
+# DATA |ugt0201_001 |02| 01| End Mill |TMC0_00006|HSS Coated | 320 | Steep Taper 20 | 10.5 | 35.3| 4| 55 
+#
+# A CLASS record is a comment record which contains the keyword CLASS, followed
+#   by the name of one of the classes defined in dbc_tool_ascii.def.
+#   This record must immediately preceed the FORMAT record for the class.
+#   Failure to place this record properly will cause problems when attempting
+#   to export a tool to the library.
+#
+# Abbreviations
+#   LIBRF   - Library Reference
+#   T       - Tool Type
+#   ST      - Tool SubType
+#   UGT     - UG Tool Type
+#   UGST    - UG Tool SubType
+#   DESCR   - Description
+#   MATREF  - Reference to cutter material table
+#   MATDES  - Cutter material description
+#   HLD     - Holding system (Type of Machine Adapter)
+#   HLDDES  - Holding system description
+#   DIA     - Diameter
+#   FLEN    - Flute Length
+#   FN      - Number of Flutes
+#   HEI     - Height
+#
+# If a record doesn't start with one of #, FORMAT or DATA it is treated
+# as continuation of the previous FORMAT or DATA record. For example a
+# valid FORMAT description might also be:
+#
+# FORMAT LIBREF      T  ST   UGT   UGST   DESCR MATREF MATDES    HLD   DIA   COR TAPA FLEN
+# # The following 2 Attribute Identifiers also belong to the FORMAT record 
+#        FN  HEI 
+# 
+#
+# A FORMAT record consists of the keyword FORMAT followed by 
+# a list of attribute identifiers.
+#
+# A DATA record usually describes one tool. The record consists of the keyword 
+# DATA followed by a list of attribute values separated by '|'. 
+# The first non blank character after DATA must be a | symbol. 
+#
+# The number and kind of attribute fields of a DATA record 
+# is described in the preceding FORMAT record.
+# This implies that the  number of attribute values in a DATA record 
+# must be the same as the number of attribute identifiers in the 
+# corresponding FORMAT record.
+#
+# The attribute identifiers can be used as DB_ID values within the 
+# DB_ALIAS structures of the Definition File (dbc_tool_ascii.def).
+# The user can define his own attribute identifiers which he needs to
+# describe his tools. 
+#
+#
+# The following attributes are common to all tool types and subtypes:
+#
+#
+#  LIBRF   - Unique identifier (so called library refernce) for a tool
+#  T       - Classification type of a tool.
+#  ST      - Classification subtype of a tool.
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Short tool description
+#  MATREF  - Reference to cutter material table (tool_materials.dat)
+#  MATDES  - Cutter material description
+#  HLD     - Holding system for mounting tool to machine
+#            HLD is used to check whether the tool can be mounted
+#            to a pocket of the tool carrier of the machine. 
+#            The HLD value here has to match one of the
+#            Holding Systems specified in the pocket object in
+#            the machine kinematics or operation navigator
+#  HLDDES  - Holding system description
+#  HLDREF  - Holder Library Reference
+#  TPREF   - Tracking Point Library Reference
+#  RIGID   - Rigidity
+#
+# The following attributes are common to all milling and drilling tools:
+#
+# TSDIA  - Tapered shank diameter
+# TSLEN  - Tapered shank length
+# TSTLEN - Tapered shank taper length
+# ZMOUNT - Z Mount
+#
+# The following attributes are common to all turning tools:
+# XMOUNT - X Mount
+# YMOUNT - Y Mount
+# HANGLE - Holder angle when Use Tool Holder is OFF
+#
+# The following attributes are common to all milling tools:
+# RAMPANGLE    - Ramp Angle
+# HELICALDIA   - Helical Diameter
+# MINRAMPLEN   - Min Ramp Length
+# MAXCUTWIDTH  - Max Cut Width
+#
+# The attributes LIBRF, T, ST are required!!
+#
+#
+# The standard UG/Library example uses the attributes T and ST 
+# (Type and SubType) in order to classify the tools managed in 
+# the ASCII data file.
+# This library classification can be mapped to the UG internal classification 
+# using the UGT (UG Type) and UGST (UG SubType) attributes.
+#
+# The following table gives an overview of the available library and UG internal classification
+# and the mapping between them.
+#
+#
+#    T   Lib Type    ST  Lib Subtype                         UGT  UG Type        UGST  UG Subtype
+#    --------------|---------------------------------------|--------------------|--------------------
+#    02  Milling     01  End Mills Non-indexable             01   Mill           01    5 Parameter
+#    02  Milling     02  End Mills Indexable                 01   Mill           01    5 Parameter
+#    02  Milling     03  Ball Mills Non-indexable            01   Mill           04    Ball
+#    02  Milling     05  Chamfer Mills Non-indexable         01   Mill           05    Chamfer Mill
+#    02  Milling     06  Spherical Mills Non-indexable       01   Mill           06    Spherical Mill
+#    02  Milling     12  Face Mills Indexable                01   Mill           05    Chamfer Mill
+#    02  Milling     21  T-Slot Mills Non-indexable          08   T Slot Cut     00    None
+#    02  Milling     93  Barrel Mills                        07   Barrel Cutter  00    None
+#    02  Milling     90  UG -  5 Parameter Cutter            01   Mill           01    5 Parameter
+#    02  Milling     91  UG -  7 Parameter Cutter            01   Mill           02    7 Parameter
+#    02  Milling     92  UG - 10 Parameter Cutter            01   Mill           03    10 Parameter
+#    02  Milling     51  Form Tool                           01   Mill           15    Mill Form
+#    02  Milling     31  Thread Mills                        02   Drill          10    Thread Mill
+# 
+#    03  Drilling    01 Twist Drills                         02   Drill          00    Standard
+#    03  Drilling    02 Insert Drills Indexable              02   Drill          00    Standard
+#    03  Drilling    03 Core Drills non-indexable            02   Drill          13    Core Drill 
+#    03  Drilling    04 Step Drills                          02   Drill          12    Step Drill
+#    03  Drilling    06 Insert Drills Non-indexable          02   Drill          00    Standard
+#    03  Drilling    07 Gun Drills Non-indexable             02   Drill          00    Standard
+#    03  Drilling    08 Core Drills indexable                02   Drill          13    Core Drill
+#    03  Drilling    11 Spot Facing Tools with Pilot         02   Drill          03    Spot Face
+#    03  Drilling    12 Spot Facing Tools without Pilot      02   Drill          03    Spot Face
+#    03  Drilling    21 Spot Drills                          02   Drill          04    Spot Drill
+#    03  Drilling    22 Center Drills                        02   Drill          01    Center Bell
+#    03  Drilling    31 Adjustable Boring Tools	             02   Drill          05    Bore
+#    03  Drilling    32  Fixed Diameter Boring               02   Drill          05    Bore
+#    03  Drilling    41 Machine Chucking Reamers             02   Drill          06    Drill Ream
+#    03  Drilling    42 Taper Machine Reamers                02   Drill          06    Drill Ream
+#    03  Drilling    51 Counter Boring Tools Non-indexable   02   Drill          07    Counter Bore
+#    03  Drilling    52 Counter Borring Tools  Indexable     02   Drill          07    Counter Bore
+#    03  Drilling    61 Counter Sinking Tools  Non-indexable 02   Drill          02    Counter Sink
+#    03  Drilling    62 Counter Sinking Tools  Indexable     02   Drill          02    Counter Sink
+#    03  Drilling    71 Taps                                 02   Drill          08    Tap
+#    03  Drilling    90 UG Drills                            02   Drill          00    Standard
+#    03  Drilling    100 Back Counter Sinking Tools          02   Drill          14    Back Counter Sink
+#    03  Drilling    33 Boring Bar                           02   Drill          15    Boring Bar
+#    03  Drilling    34 Chamfer Boring Bar                   02   Drill          16    Chamfer Boring Bar
+# 
+#    01  Turning     01 OD Turning                           03 Turning Tool     01    Standard
+#    01  Turning     02 ID Turning                           03 Turning Tool     01    Standard
+#    01  Turning     11 OD Grooving                          04 Grooving Tool    01    Standard
+#    01  Turning     12 IDGrooving                           04 Grooving Tool    01    Standard
+#    01  Turning     13 Face Grooving                        04 Grooving Tool    01    Standard
+#    01  Turning     14 Parting                              04 Grooving Tool    01    Standard
+#    01  Turning     21 OD Profiling Tools                   04 Grooving Tool    03    Full Nose Radius
+#    01  Turning     22 ID Profiling Tools                   04 Grooving Tool    03    Full Nose Radius
+#    01  Turning     31 OD Threading Tools                   05 Threading Tool   01    Standard
+#    01  Turning     32 ID Threading Tools                   05 Threading Tool   01    Standard
+#    01  Turning     51 Form Tool                            09 Form Tool        00
+#    01  Turning     91 Turning Button                       03 Turning Tool     02    Button
+#
+#    04  Solid       01 Generic                              11 Solid            00    Standard
+#    04  Solid       02 Probe                                11 Solid            01    Probe
+#    04  Solid       04 Stamping                             11 Solid            03    Stamping
+#
+#    05  Laser       01 Standard Laser                       12 Laser            00    Standard Laser
+#    05  Laser       02 Deposition Laser                     12 Laser            01    Deposition Laser
+#    05  Laser       03 Hardening Laser                      11 Solid            02    Hardening Laser
+#
+#    06  Wedm        01 Wire                                 06 Wedm             00    None
+#    07  Robotic     01 End Effector - End Mill based        01 Mill             01    5 Parameter
+#    07  Robotic     02 End Effector - Ball Mill based       01 Mill             04    Ball
+#    08  Multi-tool  01 turning                              NX-CAM Multi-tool object
+#    08  Multi-tool  02 drilling and turning                 NX-CAM Multi-tool object
+#
+# If you want to introduce new types/subtypes in this ASCII data file
+# you also have to specify UGT and UGST in order to map
+# your new tool types to UG internal classification. All available UG types and subtypes
+# are listed in the table above.
+# Note. For multi-tools we don't have UGT, UGST. All multi-tool subtypes managed here are represented
+#       in NX-CAM with one type of multi-tool object.
+#
+#
+# Milling Tools
+# ==============
+#
+#
+#  End Mill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  TIPA    - Tool Tip Angle
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS END_MILL_NON_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA TIPA COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# End Mill (indexable)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  TIPA    - Tool Tip Angle
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS END_MILL_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA TIPA COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Ball Mill (non indexable)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS BALL_MILL_NON_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#  Chamfer Mill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Chamfer Angle
+#  CHAMFERLEN - Tool Chamfer Length
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  TPREF   - Tracking Point Library Reference
+#  HA      - Tool Helix Angle
+
+#CLASS CHAMFER_MILL_NON_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA CHAMFERLEN COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Spherical Mill (non indexable)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  SDIA    - Tool Shank Diameter
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS SPHERICAL_MILL_NON_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN SDIA CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Face Mill (indexable)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  D2      - Tool Diameter 2
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS FACE_MILL_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN D2 COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# T Slot Mill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  SDIA    - Tool Neck Diameter
+#  LCOR    - Tool Lower Corner Radius
+#  UCOR    - Tool Upper Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS T_SLOT_MILL_NON_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN SDIA LCOR UCOR CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+#  Thread Mill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  THRDS   - Tool Thread Shape (01=ISO Metric 60, 02=Whitworth 55, 03=Trapez 30, 04=Round 30)
+#  THRDES  - Thread Description
+#  PIT     - Tool Pitch
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  COR1    - Tool Corner1 Radius
+#  SDIA    - Tool Neck Diameter
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  DESI    - Tool Designation
+
+#CLASS THREAD_MILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT THRDS THRDES PIT FLEN TAPA COR1 SDIA CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF DESI
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# UG 5 Parameter Mill 
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TIPA    - Tool Tip Angle
+#  TAPA    - Tool Taper Angle
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  RD      - Tool Relief Diameter
+#  RL      - Tool Relief Length
+#  HA      - Tool Helix Angle
+
+#CLASS UG_5_PARAMETER
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG DIA FN HEI ZOFF DROT FLEN TIPA TAPA COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF RD RL HA
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# 7 Parameter Mill 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  TIPA    - Tool Tip Angle
+#  COR1    - Tool Corner1 Radius
+#  CX1     - Tool Corner1 Center X
+#  CY1     - Tool Corner1 Center Y
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS UG_7_PARAMETER
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA TIPA COR1 CX1 CY1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# 10 Parameter Mill 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  TIPA    - Tool Tip Angle
+#  COR1    - Tool Corner1 Radius
+#  CX1     - Tool Corner1 Center X
+#  CY1     - Tool Corner1 Center Y
+#  COR2    - Tool Corner2 Radius
+#  CX2     - Tool Corner2 Center X
+#  CY2     - Tool Corner2 Center Y
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS UG_10_PARAMETER
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA TIPA COR1 CX1 CY1 COR2 CX2 CY2 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Tangent Barrel Mill 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  SDIA    - Tool Neck Diameter
+#  LCOR    - Tool Lower Corner Radius
+#  BRAD    - Tool Barrel Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS TANGENT_BARREL_MILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT SDIA LCOR BRAD CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Taper Barrel Mill 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  SDIA    - Tool Neck Diameter
+#  LCOR    - Tool Lower Corner Radius
+#  UCOR    - Tool Upper Corner Radius
+#  BRAD    - Tool Barrel Radius
+#  WRANG   - Tool Working Angle
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS TAPER_BARREL_MILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT SDIA LCOR UCOR BRAD WRANG CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Barrel Cutter
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  SDIA    - Tool Neck Diameter
+#  LCOR    - Tool Lower Corner Radius
+#  UCOR    - Tool Upper Corner Radius
+#  BRAD    - Tool Barrel Radius
+#  YCEN    - Tool Barrel Center Y
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  HA      - Tool Helix Angle
+
+#CLASS BARREL_MILL
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN SDIA LCOR UCOR BRAD YCEN CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF HA
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Mill Form Tool
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  FN      - Tool Flutes Number
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  RIGID   - Rigidity
+#  HLDREF  - Holder Library Reference
+#  TPREF   - Tracking point Library Reference
+
+#CLASS MILL_FORM
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES FN ZOFF DROT FLEN CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Drilling Tools
+# ==============
+#
+#
+# Twist Drill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS TWIST_DRILL
+FORMAT   LIBRF         T    ST   UGT   UGST   DESCR                             MATREF       MATDES    TLNUM   ADJREG   CUTCOMREG   HLD   HLDDES              DIA     FN   HEI       ZOFF   DROT   FLEN   PNTA   PNTL   COR1   CTH   HOFF   ZMOUNT   RIGID   TSDIA   TSLEN   TSTLEN   HLDREF         TPREF   
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Insert Drill (indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS INDEX_INSERT_DRILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN PNTA PNTL COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Insert Drill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS INSERT_DRILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN PNTA PNTL COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF 
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Gun Drill (non indexable) 
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS GUN_DRILL
+FORMAT   LIBRF         T    ST   UGT   UGST   DESCR               MATREF       MATDES           TLNUM   ADJREG   CUTCOMREG   HLD   HLDDES              DIA    FN   HEI   ZOFF   DROT   FLEN   PNTA   PNTL   COR1   CTH   HOFF   ZMOUNT   RIGID   TSDIA   TSLEN   TSTLEN   HLDREF   TPREF   
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Core Drill
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Point Angle
+#  PNTL    - Point Length
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS CORE_DRILL_NON_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN PNTA PNTL COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Core Drill (indexable)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Point Angle
+#  PNTL    - Point Length
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS CORE_DRILL_INDEXABLE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN PNTA PNTL COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#END_DATA
+
+#
+# Spot Facing
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS SPOT_FACING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Spot Drill
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS SPOT_DRILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN PNTA PNTL CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Center Drill
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TIPLEN  - Tool Tip Length
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  DIA2    - Tool Diameter 2
+#  INCA    - Tool Included Angle
+#  BANG    - Bell Angle (0 = standard centerdrill with no bell)
+#  BDIA    - Bell Diameter (0 = standard centerdrill with no bell)
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  DESI    - Tool Designation
+
+#CLASS CENTER_DRILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TIPLEN PNTA PNTL DIA2 INCA BANG BDIA CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF DESI
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Counter Sinking
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter 1
+#  DIA2    - Tool Diameter 2
+#  PNTA    - Tool Point Angle
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS COUNTER_SINKING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA DIA2 PNTA FN HEI ZOFF DROT FLEN CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Tap
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  THRDS   - Tool Thread Shape (01=ISO Metric 60, 02=Whitworth 55, 03=Trapez 30, 04=Round 30)
+#  THRDES  - Thread Description
+#  PIT     - Tool Pitch
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TIPLEN  - Tool Tip Length
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  SDIA    - Tool Neck Diameter
+#  TAPA    - Tool Taper Angle
+#  TDD     - Taper Diameter Distance
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#  DESI    - Tool Designation
+#  FN      - Tool Flutes Number
+
+#CLASS TAP
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA THRDS THRDES PIT FLEN TIPLEN HEI ZOFF DROT SDIA TAPA TDD INCA DIA2 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF DESI FN
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Chucking Reamer
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TIPLEN  - Tool Tip Length
+#  SDIA    - Tool Neck Diameter
+#  TAPA    - Tool Taper Angle
+#  TDD     - Taper Diameter Distance
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS CHUCKING_REAMER
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TIPLEN SDIA TAPA TDD CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Taper Reamer
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TIPLEN  - Tool Tip Length
+#  SDIA    - Tool Neck Diameter
+#  TAPA    - Tool Taper Angle
+#  TDD     - Taper Diameter Distance
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS TAPER_REAMER
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TIPLEN SDIA TAPA TDD CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Boring (Fixed Diameter)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  COR     - Tool Corner Radius
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  SDIA    - Tool Neck Diameter
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS BORE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT COR FLEN SDIA CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Step Drills
+#  
+#  Example 2 Steps 
+#             _____________________
+#   |         |                |
+#   |---SD2---|                |
+#    \       /________         |
+#     |     |     |            |
+#     |-SD1-|    SL1           |
+#     |     | ____|___         |
+#      \   /_________        FLEN
+#      |   |     |             |
+#      |DIA|  TIPLEN           |
+#      |   |_____|____         |
+#       \ /                    |
+#        V_____________________|___
+#
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Tip Diameter
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  TIPLEN  - Tool Tip Length
+#  COR     - Tool Corner Radius
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  SD      - Tool Shoulder Distance
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS STEP_DRILL
+FORMAT   LIBRF         T    ST   UGT   UGST   DESCR                         MATREF       MATDES   TLNUM   ADJREG   CUTCOMREG   HLD   HLDDES              DIA    PNTA   PNTL   TIPLEN   COR   FLEN   FN   HEI       SD   ZOFF   DROT   CTH   HOFF   ZMOUNT   RIGID   TSDIA   TSLEN   TSTLEN   HLDREF         TPREF   
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Counter Boring (non indexable)
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  PD      - Tool Pilot Diameter
+#  PL      - Tool Pilot Length
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  COR1    - Tool Corner Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS COUNTER_BORE
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA PD PL FLEN FN HEI ZOFF DROT COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Drill 
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  PNTA    - Tool Point Angle
+#  PNTL    - Tool Point Length 
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+
+#CLASS UG_DRILL
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG DIA FN HEI ZOFF DROT FLEN PNTA PNTL COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN HLDREF TPREF
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Back Counter Sinking
+#
+#  LIBRF       - Tool Library Reference
+#  T           - Tool Type
+#  ST          - Tool SubType
+#  UGT         - UG Tool Type
+#  UGST        - UG Tool SubType
+#  DESCR       - Description
+#  MATREF      - Tool Material Code
+#  MATDES      - Tool Material Description
+#  TLNUM       - Tool Number
+#  ADJREG      - Tool Length Adjust Register
+#  HLD         - Tool Holding System
+#  HLDDES      - Tool Holding System Description
+#  DIA         - Diameter
+#  SDIA        - NeckDiameter
+#  HEI         - Tool Length
+#  MHD         - MinHoleDiameter
+#  IS          - InsertSize
+#  COR1        - CorRadDrill
+#  HLD         - Tool Holding System
+#  HLDDES      - Tool Holding System Description
+#  HLDREF      - Holder Reference
+#  TPREF       - Tracking point Library Reference
+
+#CLASS BACK_COUNTER_SINKING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG DIA SDIA HEI MHD IS COR1 TSDIA TSLEN TSTLEN HLD HLDDES HLDREF TPREF
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Boring Bar
+#
+#  LIBRF       - Tool Library Reference
+#  T           - Tool Type
+#  ST          - Tool SubType
+#  UGT         - UG Tool Type
+#  UGST        - UG Tool SubType
+#  DESCR       - Description
+#  MATREF      - Tool Material Code
+#  MATDES      - Tool Material Description
+#  TLNUM       - Tool Number
+#  ADJREG      - Tool Length Adjust Register
+#  DIA         - Diameter
+#  SDIA        - NeckDiameter
+#  HEI         - Tool Length
+#  PD          - Tool Pilot Diameter
+#  PL          - Tool Pilot Length
+#  FIL         - Front Insert Length
+#  BIL         - Back Insert Length
+#  COR1        - Corner Radius
+#  LA          - Lead Angle
+#  IA          - Insert Angle
+#  RL          - Relief Length
+#  RW          - Relief Width
+#  HLD         - Tool Holding System
+#  HLDDES      - Tool Holding System Description
+#  HLDREF      - Holder Reference
+#  TPREF       - Tracking point Library Reference
+
+#CLASS BORING_BAR
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG DIA SDIA HEI PD PL FIL LA COR1 IA BIL RL RW TSDIA TSLEN TSTLEN HLD HLDDES HLDREF TPREF
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Chamfer Boring Bar
+#
+#  LIBRF       - Tool Library Reference
+#  T           - Tool Type
+#  ST          - Tool SubType
+#  UGT         - UG Tool Type
+#  UGST        - UG Tool SubType
+#  DESCR       - Description
+#  MATREF      - Tool Material Code
+#  MATDES      - Tool Material Description
+#  TLNUM       - Tool Number
+#  ADJREG      - Tool Length Adjust Register
+#  DIA         - Diameter
+#  SDIA        - NeckDiameter
+#  HEI         - Tool Length
+#  PD          - Tool Pilot Diameter
+#  PL          - Tool Pilot Length
+#  COR1        - Lower Corner Radius
+#  FIL         - Front Insert Length
+#  LA          - Lead Angle
+#  COR2        - Upper Corner Radius
+#  IA          - Insert Angle
+#  BIL         - Back Insert Length
+#  RL          - Relief Length
+#  RW          - Relief Width
+#  HLD         - Tool Holding System
+#  HLDDES      - Tool Holding System Description
+#  HLDREF      - Holder Reference
+#  TPREF       - Tracking point Library Reference
+
+#CLASS CHAMFER_BORING_BAR
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG DIA SDIA HEI PD PL COR1 FIL LA COR2 IA BIL RL RW TSDIA TSLEN TSTLEN HLD HLDDES HLDREF TPREF
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Multi-tools
+# ==========
+#
+#  LIBRF       - Tool Library Reference
+#  T           - Tool Type
+#  DESCR       - Description
+#  HLD         - Tool Holding System
+#  HLDDES      - Tool Holding System Description
+#
+
+#CLASS MULTITOOL_TURN
+FORMAT  LIBRF      T    ST       DESCR                           HLD  HLDDES  
+#END_DATA
+
+#CLASS MULTITOOL_DRILL_TURN
+FORMAT  LIBRF      T    ST       DESCR                           HLD  HLDDES  
+#END_DATA
+
+
+#
+# Turning Tools
+# ==============
+#
+#
+# OD Turning
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  IT      - Tool Insert Type
+#  OA      - Tool Orientation Angle
+#  NOSA    - Tool Nose Angle
+#  NOSR    - Tool Nose Radius
+#  CLEN    - Tool Cut Edge Length
+#  IC      - Inscribed Circle
+#  THCK    - Tool Thickness
+#  THCT    - Tool Thickness Type
+#  RELA    - Tool Relief Angle
+#  RELT    - Tool Relief Type
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+
+#CLASS OD_TURNING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES IT OA NOSA NOSR CLEN IC THCK THCT RELA RELT MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# ID Turning
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  IT      - Tool Insert Type
+#  OA      - Tool Orientation Angle
+#  NOSA    - Tool Nose Angle
+#  NOSR    - Tool Nose Radius
+#  CLEN    - Tool Cut Edge Length
+#  IC      - Inscribed Circle
+#  THCK    - Tool Thickness
+#  THCT    - Tool Thickness Type
+#  RELA    - Tool Relief Angle
+#  RELT    - Tool Relief Type
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS ID_TURNING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES IT OA NOSA NOSR CLEN IC THCK THCT RELA RELT MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# OD Grooving
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  COR     - Tool Corner Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Left Side Angle
+#  RSA     - Tool Right Side Angle
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  TIPA    - Tool Tip Angle
+#  LXOFF   - Tool Left X_Offset
+#  LYOFF   - Tool Left Y_Offset
+#  RXOFF   - Tool Right X_Offset
+#  RYOFF   - Tool Right Y_Offset
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS OD_GROOVING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES OA IW IL COR THCK MXDP LSA RSA TP INSP TIPA LXOFF LYOFF RXOFF RYOFF MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# ID Grooving
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  COR     - Tool Corner Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Left Side Angle
+#  RSA     - Tool Right Side Angle
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  TIPA    - Tool Tip Angle
+#  LXOFF   - Tool Left X_Offset
+#  LYOFF   - Tool Left Y_Offset
+#  RXOFF   - Tool Right X_Offset
+#  RYOFF   - Tool Right Y_Offset
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS ID_GROOVING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES OA IW IL COR THCK MXDP LSA RSA TP INSP MNBD MXTR TIPA LXOFF LYOFF RXOFF RYOFF XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Face Grooving
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  COR     - Tool Corner Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Left Side Angle
+#  RSA     - Tool Right Side Angle
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  TIPA    - Tool Tip Angle
+#  LXOFF   - Tool Left X_Offset
+#  LYOFF   - Tool Left Y_Offset
+#  RXOFF   - Tool Right X_Offset
+#  RYOFF   - Tool Right Y_Offset
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  MNFD    - Tool Minimum Facing Diameter
+#  MXFD    - Tool Maximum Facing Diameter
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS FACE_GROOVING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES OA IW IL COR THCK MXDP LSA RSA TP INSP TIPA LXOFF LYOFF RXOFF RYOFF MNBD MXTR MNFD MXFD XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Parting
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  COR     - Tool Corner Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Left Side Angle
+#  RSA     - Tool Right Side Angle
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  TIPA    - Tool Tip Angle
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  PSET    - Tool Preset Cutter  ( R = Right, L = Left )
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS PARTING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES OA IW IL COR THCK MXDP LSA RSA TP INSP TIPA XOFF YOFF PSET MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# OD Threading
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  THRDS   - Tool Thread Shape (01=ISO Metric 60, 02=Whitworth 55, 03=Trapez 30, 04=Round 30)
+#  THRDES  - Thread Description
+#  PIT     - Tool Pitch
+#  OA      - Tool Orientation Angle
+#  NOSR    - Tool Nose Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS OD_THREADING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES THRDS THRDES PIT OA NOSR CLEN THCK MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID TPREF INDXNTCH TURRETROT
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# ID Threading
+# ----------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  THRDS   - Tool Thread Shape (01=ISO Metric 60, 02=Whitworth 55, 03=Trapez 30, 04=Round 30)
+#  THRDES  - Thread Description
+#  PIT     - Tool Pitch
+#  OA      - Tool Orientation Angle
+#  NOSR    - Tool Nose Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS ID_THREADING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES THRDS THRDES PIT OA NOSR CLEN THCK MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID TPREF INDXNTCH TURRETROT
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# OD Profiling
+# ------------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  OA      - Tool Orientation Angle
+#  RAD     - Tool Radius
+#  LSA     - Tool Side Angle
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  RELA    - Tool Relief Angle
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS OD_PROFILING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES OA RAD LSA IL THCK RELA MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# ID Profiling
+# ------------
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  OA      - Tool Orientation Angle
+#  RAD     - Tool Radius
+#  LSA     - Tool Side Angle
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  RELA    - Tool Relief Angle
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS ID_PROFILING
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES OA RAD LSA IL THCK RELA MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Standard Turning Tool
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  IT      - Tool Insert Type
+#  OA      - Tool Orientation Angle
+#  NOSA    - Tool Nose Angle
+#  NOSR    - Tool Nose Radius
+#  CLEN    - Tool Cut Edge Length
+#  IC      - Inscribed Circle
+#  THCK    - Tool Thickness
+#  THCT    - Tool Thickness Type
+#  RELA    - Tool Relief Angle
+#  RELT    - Tool Relief Type
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_TURNING_STD
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG IT OA NOSA NOSR CLEN IC THCK THCT RELA RELT MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Turning Tool Button
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  IT      - Tool Insert Type
+#  OA      - Tool Orientation Angle
+#  BTDIA   - Tool Button Diameter
+#  BTHA    - Button Holder Angle
+#  BTHW    - Button Holder Width
+#  THCK    - Tool Thickness
+#  THCT    - Tool Thickness Type
+#  RELA    - Tool Relief Angle
+#  RELT    - Tool Relief Type
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_TURNING_BUTTON
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG IT OA BTDIA BTHA BTHW THCK THCT RELA RELT MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Standard Grooving Tool
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  COR     - Tool Left Corner Radius
+#  COR2    - Tool Right Corner Radius
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Side Angle
+#  TIPA    - Tool Tip Angle
+#  TP      - Tool Left Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  LXOFF   - Tool Left X_Offset
+#  LYOFF   - Tool Left Y_Offset
+#  RXOFF   - Tool Right X_Offset
+#  RYOFF   - Tool Right Y_Offset
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_GROOVING_STD
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG OA IW IL COR COR2 THCK MXDP LSA TIPA TP INSP LXOFF LYOFF RXOFF RYOFF MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Grooving Tool (Full Nose Radius)
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  LSA     - Tool Side Angle
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Left Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_GROOVING_FNR
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG OA IW LSA IL THCK RELA MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Grooving Tool (Ring Type Joint)
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  OA      - Tool Orientation Angle
+#  NOSW    - Tool Nose Width
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Left Angle
+#  RSA     - Tool Right Angle
+#  TP      - Tool Left Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  LXOFF   - Tool Left X_Offset
+#  LYOFF   - Tool Left Y_Offset
+#  RXOFF   - Tool Right X_Offset
+#  RYOFF   - Tool Right Y_Offset
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_GROOVING_RING
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG OA NOSW IL THCK MXDP LSA RSA TP INSP LXOFF LYOFF RXOFF RYOFF MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Grooving Tool (user defined)
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  OA      - Tool Orientation Angle
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  LSA     - Tool Left Angle
+#  RSA     - Tool Right Angle
+#  TIPA    - Tool Tip Angle
+#  COR     - Tool Left Corner Radius
+#  COR2    - Tool Right Corner Radius
+#  TP      - Tool Left Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  LXOFF   - Tool Left X_Offset
+#  LYOFF   - Tool Left Y_Offset
+#  RXOFF   - Tool Right X_Offset
+#  RYOFF   - Tool Right Y_Offset
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_GROOVING_USER
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG OA IW IL THCK MXDP LSA RSA TIPA COR COR2 TP INSP LXOFF LYOFF RXOFF RYOFF MNBD MXTR XMOUNT YMOUNT HANGLE RIGID HLDREF TPREF INDXNTCH TURRETROT
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Threading Tool (Standard)
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  OA      - Tool Orientation Angle
+#  NOSR    - Tool Nose Radius
+#  LA      - Tool Left Angle
+#  RA      - Tool Right Angle
+#  TOFF    - Tool Tip Offset
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_THREADING_STD
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG OA NOSR LA RA TOFF IW IL THCK MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID TPREF INDXNTCH TURRETROT
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# UG Threading Tool (Trapez)
+# This type is for legacy tools which were converted from old 
+# partfile tool libraries
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  OA      - Tool Orientation Angle
+#  NOSW    - Tool Nose Width
+#  LA      - Tool Left Angle
+#  RA      - Tool Right Angle
+#  TOFF    - Tool Tip Offset
+#  IW      - Tool Insert Width
+#  IL      - Tool Insert Length
+#  THCK    - Tool Thickness
+#  MXDP    - Tool Max Depth
+#  XOFF    - Tool X_Offset
+#  YOFF    - Tool Y_Offset
+#  TP      - Tool Tracking Point
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+
+#CLASS UG_THREADING_TRAPEZ
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG OA NOSW LA RA TOFF IW IL THCK MXDP XOFF YOFF TP INSP MNBD MXTR XMOUNT YMOUNT HANGLE RIGID TPREF INDXNTCH TURRETROT
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Turning Form Tool
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  OA      - Tool Orientation Angle
+#  THCK    - Tool Thickness
+#  IEA     - Initial Edge Angle
+#  IEL     - Initial Edge Length
+#  INSP    - Tool Insert Position  (1=topside, 2=downside)
+#  MXDP    - Tool Max Depth
+#  MNFD    - Tool Minimum Facing Diameter
+#  MXFD    - Tool Maximum Facing Diameter
+#  MNBD    - Tool Min Boring Diameter
+#  MXTR    - Tool Max Toolreach
+#  RIGID   - Tool Rigidity
+#  TPREF   - Tracking Point Library Reference
+#  INDXNTCH    - Index Notch, rotation angle around the tool axis = machine adapter direction
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#  TURRETROT   - Turret Rotation, incremental turet rotation angle
+#                to transform the corresponding cutter (insert) parallel to the lathe work plane 
+#
+#CLASS TURN_FORM
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM OA THCK IEA IEL INSP MXDP MNFD MXFD MNBD MXTR XMOUNT YMOUNT HANGLE RIGID TPREF INDXNTCH TURRETROT
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+# Generic Solid Tool
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  HLD     - Tool Holding System (Type of Machine Adapter)
+#  HLDDES  - Tool Holding System Description
+#  RIGID   - Tool Rigidity
+#
+#CLASS GENERIC
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM HLD HLDDES RIGID
+#------------------------------------------------------------
+#END_DATA
+
+#
+# Probe
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  HLD     - Tool Holding System (Type of Machine Adapter)
+#  HLDDES  - Tool Holding System Description
+#  RIGID   - Tool Rigidity
+#
+#CLASS PROBE
+FORMAT LIBRF T ST DESCR MATREF MATDES TLNUM HLD HLDDES RIGID
+#------------------------------------------------------------
+#END_DATA
+
+
+#
+#  Hardening Laser
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  HEI     - Tool Length (Height)  
+#  FLEN    - Tool Flute Length
+#  DIA     - Tool Diameter
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#
+#CLASS HARDENING_LASER
+FORMAT LIBRF T ST UGT UGST DESCR TLNUM ADJREG HEI FLEN DIA HLD HLDDES
+#-----------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+#  Stamping
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  TLNUM   - Tool Number
+#
+#CLASS STAMPING
+FORMAT LIBRF T ST UGT UGST DESCR TLNUM
+#-----------------------------------------------------------------------------------
+#END_DATA
+
+
+#
+# Wire
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  DIA     - Tool Diameter
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#   HLD     - Holding system (Type of Machine Adapter)
+#   HLDDES  - Holding system description
+#  HLDREF  - Holder Library Reference
+
+#CLASS WIRE
+FORMAT LIBRF T ST UGT UGST DESCR DIA TLNUM ADJREG CUTCOMREG MATREF MATDES HLD HLDDES HLDREF
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+#
+#  Standard Laser
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  ND      - Nozzle Diameter
+#  NL      - Nozzle Length
+#  NTD     - Nozzle Tip Diameter
+#  NTL     - Nozzle Taper Length
+#  FDIS    - Focal Distance
+#  FDIA    - Focal Diameter
+#  MINP    - Minimum Power
+#  MAXP    - Maximum Power
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  HLDREF  - Holder Library Reference
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#
+#CLASS STD_LASER
+FORMAT LIBRF T ST UGT UGST DESCR ND NL NTD NTL FDIS FDIA MINP MAXP HLD HLDDES HLDREF TLNUM ADJREG CUTCOMREG
+#-----------------------------------------------------------------------------------
+#END_DATA
+#
+#  Deposition Laser
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  ND      - Nozzle Diameter
+#  NL      - Nozzle Length
+#  NTD     - Nozzle Tip Diameter
+#  NTL     - Nozzle Taper Length
+#  FDIS    - Focal Distance
+#  FDIA    - Focal Diameter
+#  MINP    - Minimum Power
+#  MAXP    - Maximum Power
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  SDIST   - Standoff Distance
+#  WDIA    - Working Diameter
+#  WRANGE  - Working Range
+#  HLDREF  - Holder Library Reference
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#
+#CLASS DEPOSITION_LASER
+FORMAT LIBRF T ST UGT UGST DESCR ND NL NTD NTL FDIS FDIA MINP MAXP HLD HLDDES SDIST WDIA WRANGE HLDREF TLNUM ADJREG CUTCOMREG
+#-----------------------------------------------------------------------------------
+#END_DATA
+
+#
+#  End Effector - End Mill based
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  TIPA    - Tool Tip Angle
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#
+#CLASS ROBOTIC_END_MILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA TIPA COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+#  End Effector - Ball Mill based
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  MATREF  - Tool Material Code
+#  MATDES  - Tool Material Description
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  DIA     - Tool Diameter
+#  FN      - Tool Flutes Number
+#  HEI     - Tool Length (Height)
+#  ZOFF    - Tool Z Offset
+#  DROT    - Tool Direction (3=clockwise, 4=counterclockwise)
+#  FLEN    - Tool Flute Length (Cutting Depth)
+#  TAPA    - Tool Taper Angle
+#  COR1    - Tool Corner1 Radius
+#  CTH     - Coolant Through
+#  HOFF    - Tool Holder Offset
+#
+#CLASS ROBOTIC_BALL_MILL
+FORMAT LIBRF T ST UGT UGST DESCR MATREF MATDES TLNUM ADJREG CUTCOMREG HLD HLDDES DIA FN HEI ZOFF DROT FLEN TAPA COR1 CTH HOFF ZMOUNT RIGID TSDIA TSLEN TSTLEN RAMPANGLE HELICALDIA MINRAMPLEN MAXCUTWIDTH HLDREF TPREF
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#END_DATA
+
+#
+#  Fused Deposition Tool
+#
+#  LIBRF   - Tool Library Reference
+#  T       - Tool Type
+#  ST      - Tool SubType
+#  UGT     - UG Tool Type
+#  UGST    - UG Tool SubType
+#  DESCR   - Description
+#  SDIST   - Standoff Distance
+#  EDIA    - Extrusion Diameter
+#  ND      - Nozzle Diameter
+#  NL      - Nozzle Length
+#  NTD     - Nozzle Tip Diameter
+#  NTL     - Nozzle Taper Length
+#  NOD     - Nozzle orifice Diameter
+#  MINW    - Min Bead Width
+#  MAXW    - Max Bead Width
+#  MINH    - Min Bead Height
+#  MAXH    - Max Bead Height
+#  MINER   - Min extrusion Rate
+#  MAXER   - Max extrusion Rate
+#  HLD     - Tool Holding System
+#  HLDDES  - Tool Holding System Description
+#  HLDREF  - Holder Library Reference
+#  TLNUM   - Tool Number
+#  ADJREG  - Tool Length Adjust Register
+#  CUTCOMREG - Tool CUTCOM Register
+#
+#CLASS FUSED_DEPOSITION_MATERIAL_EXTRUDER
+FORMAT LIBRF T ST UGT UGST DESCR SDIST EDIA ND NL NTD NTL NOD MINW MAXW MINH MAXH MINER MAXER HLD HLDDES HLDREF TLNUM ADJREG CUTCOMREG
+#END_DATA
