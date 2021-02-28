@@ -15,53 +15,55 @@ class scriptRunner():
         self._nx_file_name = nx_file_name
 
     def run(self):
-        print('\n')
-        print('-------- \"Starting workflow...\" --------')
-        print('\n')
+        print("\n-------- Starting workflow... --------\n")
         try:
             self._start_workflow()
         except Exception as e:
             raise Exception(e)
-        print('\n')
-        print('-------- \"Workflow finished\" --------')
-        print('\n')
+        print("\n-------- Workflow finished --------\n")
 
     def _start_workflow(self):
         sub = subprocess.run(['python', "./scripts/read_tables/main.py"])
         if sub.returncode != 0:
-            print('-- ERROR --')
+            print('\n-- ERROR --')
             print('"read_tables" crashed')
             return
 
         sub = subprocess.run(['python', "./scripts/read_tools/main.py"])
         if sub.returncode != 0:
-            print('-- ERROR --')
+            print('\n-- ERROR --')
             print('"read_tools" crashed')
             return
         
         sub = subprocess.run(['python', "./scripts/create_dat/main.py"])
         if sub.returncode != 0:
-            print('-- ERROR --')
+            print('\n-- ERROR --')
             print('"create_dat" crashed')
             return    
         
         sub = subprocess.run(['python', "./scripts/builder_fbm/main.py", self._local_pp, self._nx_file_name, self._nx_path,])
         if sub.returncode != 0:
-            print('-- ERROR --')
-            print('"fbm_builder" crashed')
+            print('\n-- ERROR --')
+            print('"builder_fbm" crashed')
+            return
+
+        sub = subprocess.run(['python', "./scripts/builder_ordering/main.py", self._local_pp, self._nx_file_name, self._nx_path,])
+        if sub.returncode != 0:
+            print('\n-- ERROR --')
+            print('"builder_ordering" crashed')
             return
 
         A=1
         if A==0:    
             sub = subprocess.run(['python', "./scripts/builder_sfd/main.py", self._local_pp, self._nx_file_name, self._nx_path,])
             if sub.returncode != 0:
-                print('-- ERROR --')
+                print('\n-- ERROR --')
                 print('"builder_sfd" crashed')
                 return
 
         sub = subprocess.run(['python', "./scripts/builder_output_data/main.py", self._local_pp, self._nx_file_name, self._nx_path,])
         if sub.returncode != 0:
-            print('-- ERROR --')
+            print('\n-- ERROR --')
             print('"builder_output_data" crashed')
             return
 
@@ -77,12 +79,12 @@ if __name__ == "__main__":
             Directory_files.append(file)
     
     if len(Directory_files)>1:
-        print('-- ERROR --')
+        print('\n-- ERROR --')
         print('More than one assembly file detected. Remove unnecessary files.')
         sys.exit()
         
     elif len(Directory_files)==0:
-        print('-- ERROR --')
+        print('\n-- ERROR --')
         print('No assembly file found')
         sys.exit()
 

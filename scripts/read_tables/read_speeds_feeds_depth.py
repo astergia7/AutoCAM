@@ -97,7 +97,6 @@ def Read_Tables():
             Speeds_and_feeds_data['{},{}'.format(tool_list[x],material_list[y])] = s_and_f[n]
             n += 1
 
-
     #print(Speeds_and_feeds_data)
 
     workbook2.release_resources()
@@ -108,3 +107,5 @@ def Read_Tables():
 
     with open(Json_Speed_and_feeds,'w') as outfile:
         json.dump(Speeds_and_feeds_data, outfile)
+
+    ("\n-------- Speeds-Feeds Database Created --------\n")

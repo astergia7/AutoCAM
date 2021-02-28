@@ -25,6 +25,7 @@ def read_tools():
     
     with open(Generated_Tool_bat,'w') as outfile:
         outfile.write(A)
+    ("\n-------- Tool Database Created --------\n")
 
 def tool_class_selector(row, text):
     Title = [ 'LIBRF', 'T', 'ST', 'UGT', 'UGST', 'DESCR', 'MATREF', 'MATDES', 'TLNUM', 'ADJREG', 'CUTCOMREG', \

@@ -281,17 +281,16 @@ def main() :
     featureProcessBuilder1.Destroy()
     theSession.CleanUpFacetedFacesAndEdges()
     featureGeometry4 = nXObject3
-    theSession.CAMSession.PathDisplay.ShowToolPath(featureGeometry4)
-    markId52 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Generate Tool Paths")
-    objects1 = [NXOpen.CAM.CAMObject.Null] * 1 
-    nCGroup1 = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
-    objects1[0] = nCGroup1
-    workPart.CAMSetup.GenerateToolPath(objects1)
+
+    # Generate Tool Path
+    #objects1 = [NXOpen.CAM.CAMObject.Null] * 1 
+    #objects1[0] = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
+    #workPart.CAMSetup.GenerateToolPath(objects1)
 
     # Save file
-    partSaveStatus1 = workPart.Save(NXOpen.BasePart.SaveComponents.TrueValue, NXOpen.BasePart.CloseAfterSave.FalseValue)
+    partSave = workPart.Save(NXOpen.BasePart.SaveComponents.TrueValue, NXOpen.BasePart.CloseAfterSave.FalseValue)
     #partSaveStatus1 = workPart.SaveAs(Output_path+"\\Computed_Assembly.prt")
-    partSaveStatus1.Dispose()
+    partSave.Dispose()
 
 def s_n_f():
     # Assign Feeds and Speeds

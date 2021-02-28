@@ -27,8 +27,6 @@ def read_def_bat():
     with open(Generated_Env_dat,'w') as outfile:
         outfile.write(A)
     
-    print('\n')
-    print("-------- \"Create Bat Done\" --------")
-    print('\n')
+    print("\n-------- Create Bat Done --------\n")
 
 #read_def_bat() 
