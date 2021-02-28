@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 input/
 output/
+resources/json/
 separate_nx_scripts/
 __pycache__/
 *.py[cod]
