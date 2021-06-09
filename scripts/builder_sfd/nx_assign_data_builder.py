@@ -8,14 +8,15 @@ class NxAssignBuilder:
     def __init__(self):
         pass
 
-    def run(self, project_path,nx_file_name,nx_path):
-        model_full_path = project_path +'/output/'+ nx_file_name
-        result_file_path = project_path + '/output'
+    def run(self, project_path,nx_file_name,nx_path, output_path):
+        #model_full_path = project_path +'/output/'+ nx_file_name
+        model_full_path = nx_file_name
+        result_file_path = output_path
         macro_name, macro_code = self._build_macro(model_full_path, result_file_path, project_path)
-        path_to_macro = project_path + '/output/' + macro_name # Path where builed macro file will be generated 
+        path_to_macro = output_path + '/' + macro_name # Path where builed macro file will be generated 
         self._write_macro(macro_code, path_to_macro)
         self._run(path_to_macro, nx_path)
-        print('Done Assigning')
+        print('\n ------ Cutting Parameters Were Assigned ------\n')
 
     def _build_macro(self, model_full_path,result_file_path,project_path):
         macro_name = "nx_assign_temp.py"

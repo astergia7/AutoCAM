@@ -1,11 +1,19 @@
 # Byte-compiled / optimized / DLL files
 input/
 output/
+qtgui/gui.cfg
+savefile.py
 resources/json/
 separate_nx_scripts/
 __pycache__/
 *.py[cod]
 *$py.class
+exampleGUI.py
+subprogram.py
+subsub.py
+scripts/runner_main/debug.py
+Converted_Tool_library.xlsx
+
 
 # C extensions
 *.so

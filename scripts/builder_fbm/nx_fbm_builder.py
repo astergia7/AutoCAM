@@ -8,19 +8,21 @@ class NxFBMBuilder:
     def __init__(self):
         pass
 
-    def run(self, project_path,nx_file_name,nx_path):
-        model_full_path = project_path +'/output/'+ nx_file_name
-        result_file_path = project_path + '/output'
+    def run(self, project_path,nx_file_path,nx_path, output_path):
+        #model_full_path = project_path +'/output/'+ nx_file_name
+        model_full_path = nx_file_path
+        result_file_path = output_path
         macro_name, macro_code = self._build_macro(model_full_path,result_file_path, project_path)
-        path_to_macro = project_path + '/output/' + macro_name # Path where builded macro file will be generated 
+        path_to_macro = output_path  + '/' + macro_name # Path where builded macro file will be generated 
+        program_folder = project_path
         self._write_macro(macro_code, path_to_macro)
-        self._run(path_to_macro, nx_path)
-        print('FBM Generation Complete')
+        self._run(path_to_macro, nx_path, program_folder)
+        print('\n------ FBM Operations Generation Complete ------\n')
 
     def _build_macro(self, model_full_path,result_file_path, project_path):
         macro_name = "nx_fbm_temp.py"
         script_dir = project_path+"/scripts"
-        rel_path = '/builder_fbm/FBM_Auto.py'
+        rel_path = '/builder_fbm/fbm_auto.py'
         abs_path = script_dir+rel_path
         with open(abs_path, "r") as code_template:
             code_list = code_template.readlines()
@@ -35,9 +37,12 @@ class NxFBMBuilder:
         f.write(macro_code)
         f.close()
 
-    def _run(self, macro_path, nx_path):
+    def _run(self, macro_path, nx_path, program_folder):
+        L1 = "set \"UGII_CAM_LIBRARY_TOOL_DIR=" + str(program_folder) + "\\resources\custom_tool_database\\\""
+        L2 = "set \"UGII_CAM_MACHINING_KNOWLEDGE_DIR=" + str(program_folder) + "\\resources\custom_machine_knowledge\\\""
         prepare_env = '"' + nx_path + \
-                      'UGII/ugiicmd.bat" "' + nx_path + '"' + ' & '
+                      'UGII/ugiicmd.bat" "' + nx_path + '"' + ' & ' + L1 + ' & ' + L2 + ' & '
         cmd = prepare_env + 'run_journal "' + macro_path + '"'
-        print(cmd)
         subprocess.run(cmd)
+
+        

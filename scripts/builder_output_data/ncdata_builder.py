@@ -8,14 +8,15 @@ class NxNCDataBuilder:
     def __init__(self):
         pass
 
-    def run(self, project_path,nx_file_name,nx_path):
-        model_full_path = project_path +'/output/'+ nx_file_name
-        result_file_path = project_path +'/output/' + 'output_data.txt'
+    def run(self, project_path,nx_file_path,nx_path,output_path):
+        #model_full_path = project_path +'/output/'+ nx_file_name
+        model_full_path = nx_file_path
+        result_file_path = output_path + '/output_data.txt'
         macro_name, macro_code = self._build_macro(model_full_path,result_file_path,project_path)
-        path_to_macro = project_path + '/output/'+ macro_name
+        path_to_macro = output_path + '/'+ macro_name
         self._write_macro(macro_code, path_to_macro)
         self._run(path_to_macro, nx_path)
-        print('Done generating output data')
+        print('\n------ Done generating output data ------\n')
 
     def _build_macro(self, model_full_path,result_file_path,project_path):
         macro_name = "nx_nc_data_temp.py"

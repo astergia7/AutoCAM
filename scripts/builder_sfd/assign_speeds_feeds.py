@@ -13,10 +13,9 @@ import os
 def main(): 
     program_folder = os.path.abspath('')
     Json_Speed_and_feeds = program_folder + '/resources/json/tools_data.txt' # Path to Json file os speeds, feeds and depth
-    Json_operations = program_folder + '/resources/json/operations_data.txt' # Path to Json file of list of features to search
-    Output_path = program_folder + '/output' # Output path to save file
 
     theSession = NXOpen.Session.GetSession()
+    theSession.Parts.LoadOptions.UsePartialLoading = False
     displayPart = theSession.Parts.Display
     if displayPart is None:
         displayPart, loadStatus = theSession.Parts.OpenDisplay(r"-@file_path@-")
@@ -26,12 +25,14 @@ def main():
     camSession = theSession.CreateCamSession()
     CAM_Setup_Build = workPart.CreateCamSetup("mill_planar")  
 
+    # Open tools_data.txt file to read feeds/speeds/depth parameters
     with open(Json_Speed_and_feeds) as json_file:
         data= json.load(json_file)
     
-    start_point = workPart.CAMSetup.CAMOperationCollection.FindObject("GEOMETRY")
+    start_point = workPart.CAMSetup.CAMOperationCollection.FindObject("WORKPIECE")
     objects_at_start = NXOpen.CAM.NCGroup.GetMembers(start_point)
     millGeomBuilder1 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(start_point)
+    material=millGeomBuilder1.GetMaterial() # get part material
 
     group_list = []
     checked_list = []
@@ -66,33 +67,39 @@ def main():
         x=x[1]
         x="Create"+x+"Builder"
         selected_tool=str(cutting_tool.Name)
-        material=str(millGeomBuilder1.GetMaterial())
-        a=selected_tool+','+material
-        try:
-            buff = data[a]
-            speed = float(buff[0])
-            feed = float(buff[1])                 
-            depth = float(buff[2])
-
-            K=builder_selector(x,Operation,workPart)
-            K.FeedsBuilder.SurfaceSpeedBuilder.Value = speed
-            K.FeedsBuilder.FeedPerToothBuilder.Value = feed
-            try:
-                K.DepthPerCut.Value = depth
-            except: pass
-            K.FeedsBuilder.RecalculateData(NXOpen.CAM.FeedsBuilder.RecalcuateBasedOn.SurfaceSpeed)
-            K.Commit()
-        except:
-            pass
-
-    nCGroup1 = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
-    theSession.CAMSession.PathDisplay.ShowToolPath(nCGroup1)
-    
-    markId57 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Generate Tool Paths")
-    
-    objects1 = [NXOpen.CAM.CAMObject.Null] * 1 
-    objects1[0] = nCGroup1
-    workPart.CAMSetup.GenerateToolPath(objects1)
+        selected_Builder=builder_selector(x,Operation,workPart)
+        
+        try: # Compare selected tool with database
+            buff = data[selected_tool]
+        except: # Upper/lover case difference
+            buff = data[selected_tool.lower()]
+        
+        if buff[0] != '':
+            speed = float(buff[0]) # extract speed value
+            selected_Builder.FeedsBuilder.SurfaceSpeedBuilder.Value = speed # assign speed value
+            selected_Builder.FeedsBuilder.RecalculateData(NXOpen.CAM.FeedsBuilder.RecalcuateBasedOn.SurfaceSpeed)
+        if buff[1] != '':
+            feed = float(buff[1]) # extract feed value
+            selected_Builder.FeedsBuilder.FeedPerToothBuilder.Value = feed  # assign feed value
+            selected_Builder.FeedsBuilder.RecalculateData(NXOpen.CAM.FeedsBuilder.RecalcuateBasedOn.FeedPerTooth)
+            if selected_Builder.FeedsBuilder.SpindleRpmBuilder.Value > 16000.0:
+                selected_Builder.FeedsBuilder.SpindleRpmBuilder.Value = 16000.0
+                selected_Builder.FeedsBuilder.FeedPerToothBuilder.Value = feed  # assign feed value
+                selected_Builder.FeedsBuilder.RecalculateData(NXOpen.CAM.FeedsBuilder.RecalcuateBasedOn.FeedPerTooth)
+        if buff[2] != '':
+            depth = float(buff[2]) # extract depth value
+            if x == "CreateCavityMillingBuilder":
+                if '_ROUGH' in str(each_operation):    
+                    selected_Builder.CutLevel.GlobalDepthPerCut.DistanceBuilder.Value = depth + 0.5 # assign depth value to cavity mill operation
+                else:
+                    selected_Builder.CutLevel.GlobalDepthPerCut.DistanceBuilder.Value = depth 
+            elif x == "CreateHoleDrillingBuilder" or x == "CreateChamferMillingBuilder" or x == "CreateCylinderMillingBuilder":
+                pass
+            else:
+                selected_Builder.DepthPerCut.Value = depth # assign depth value to other type of operations, drill will be ignored automatically by NX
+        
+        selected_Builder.FeedsBuilder.RecalculateData(NXOpen.CAM.FeedsBuilder.RecalcuateBasedOn.SurfaceSpeed)
+        selected_Builder.Commit() # Appy changes
     
     # Save file
     partSaveStatus1 = workPart.Save(NXOpen.BasePart.SaveComponents.TrueValue, NXOpen.BasePart.CloseAfterSave.FalseValue)

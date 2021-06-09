@@ -1,25 +1,16 @@
-﻿# NX 1915
-import math
-import NXOpen
+﻿import NXOpen
 import NXOpen.UF
-import NXOpen.Assemblies
 import NXOpen.CAM
-import NXOpen.SIM
+import NXOpen.Assemblies
 import json
 import os
+import math
+import operator
 
-def main() : 
-    program_folder = os.path.abspath('')
-    Json_Speed_and_feeds = program_folder + '/resources/json/tools_data.txt' # Path to Json file os speeds, feeds and depth
-    Json_operations = program_folder + '/resources/json/operations_data.txt' # Path to Json file of list of features to search
-    Output_path = program_folder + '/output' # Output path to save file
-    assembly_comps = []
-    part_var = []
-    blank_var = []
-    features_data = []
-    operations_data = []
-    bounding = False
+# Workflow NX script with FBM Auto functionality
+# Can be used only as part of "main runner"
 
+def main():
     theSession = NXOpen.Session.GetSession()
     theSession.Parts.LoadOptions.UsePartialLoading = False
     displayPart = theSession.Parts.Display
@@ -29,137 +20,122 @@ def main() :
     camSession = theSession.CreateCamSession()
     theLw = theSession.ListingWindow
     theUfSession = NXOpen.UF.UFSession.GetUFSession()
+    id1 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "FBM AUTO SCRIPT")
+    
+    program_folder = os.path.abspath('')
+    Json_Speed_and_feeds = program_folder + '/resources/json/tools_data.txt' # Path to Json file os speeds, feeds and depth
+    Json_operations = program_folder + '/resources/json/operations_data.txt' # Path to Json file of list of features to search
+    
+    assembly_components = []
+    part_var = []
+    blank_var = []
+    bounding = False
+    single_part = False
+    features_data = []
+    operations_data = []
 
-    # read Json machine knowledge data
+    # Read Json machine knowledge data
     with open(Json_operations) as json_file:
         data= json.load(json_file)
         for p in data['features']:
             features_data.append(p)
         for p in data['operations']:
             operations_data.append(p)
+    
+    # Read Json of tools data
+    with open(Json_Speed_and_feeds) as json_file:
+        tools_data = json.load(json_file)
 
-    # turn on manufacturing mode if needed
+    # Initialize CAM setup and session
     try:
-        #markId_start = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Enter Manufacturing")
-        #theSession.ApplicationSwitchImmediate("UG_APP_MANUFACTURING")
-        CAM_Setup_Build = workPart.CreateCamSetup("mill_planar")
-        result1 = theSession.IsCamSessionInitialized()
-        #theSession.CAMSession.PathDisplay.SetAnimationSpeed(5)
-        #theSession.CAMSession.PathDisplay.SetIpwResolution(NXOpen.CAM.PathDisplay.IpwResolutionType.Medium)
+        theSession.ApplicationSwitchImmediate("UG_APP_MANUFACTURING")
+        CAM_Setup_Build = workPart.CreateCamSetup("mill_planar") # initialize cam_setup
+        theSession.CAMSession.SpecifyConfiguration("${UGII_CAM_CONFIG_DIR}cam_general")
         kinematicConfigurator1 = workPart.CreateKinematicConfigurator()
-        theSession.CleanUpFacetedFacesAndEdges()
     except: 
         pass 
-
-    markId1 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "body feature group")
+    
+    # Check assebmly or single file
     theLw.Open()
     try:
         comps = displayPart.ComponentAssembly.RootComponent.GetChildren() # initialize list to hold components
- 
         for x in comps:
             #theLw.WriteLine(x.DisplayName)
-            assembly_comps.append(x.DisplayName)
-        # _print(assembly_comps) # Uncomment to check assembly parts list
-        theLw.Close()
+            assembly_components.append(x.DisplayName)
+        # _print(assembly_components) # Uncomment to check assembly parts list
 
-        part_var = [s for s in assembly_comps if "_Part" or "_part" in s]
-        blank_var = [s for s in assembly_comps if "_Blank" in s]
+        part_var = [s for s in assembly_components if "_Part" in s or "_part" in s]
+        blank_var = [s for s in assembly_components if "_Blank" in s or "_blank" in s]
 
         if not part_var:
-            part_var.append(str(displayPart.Leaf)) 
+            part_var.append(str(displayPart.Name)) 
         if not blank_var:
+            #_print("No Blank Part. Bounding body will be produced.")
             bounding = True
-    except: 
-        part_var.append(str(displayPart.Leaf)) 
-        #_print(displayPart.Leaf)
-    
-    featureGeometry1 = workPart.CAMSetup.CAMGroupCollection.FindObject("WORKPIECE")
-    theSession.CAMSession.PathDisplay.ShowToolPath(featureGeometry1)
-    markId1 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Edit WORKPIECE")
-    markId2 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Start")
-    millGeomBuilder1 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(featureGeometry1)
-    theSession.SetUndoMarkName(markId2, "Workpiece Dialog")
-    millGeomBuilder1.PartGeometry.InitializeData(False)
-    markId3 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Start")
-    theSession.CAMSession.PathDisplay.HideToolPath(featureGeometry1)
-    geometrySetList1 = millGeomBuilder1.PartGeometry.GeometryList
-    theSession.SetUndoMarkName(markId3, "Part Geometry Dialog")
-    taggedObject1 = geometrySetList1.FindItem(0)
-    geometrySet1 = taggedObject1
+    except:
+        part_var.append(str(displayPart.Name))
+        bounding = True
+        single_part = True
+    theLw.Close()
 
-    #millGeomBuilder1.SetMaterial("MAT0_00600") #set material
-    material_part = millGeomBuilder1.GetMaterial() # get part material
-    #_print(material_part)
+    featureGeometry1 = workPart.CAMSetup.CAMGroupCollection.FindObject("WORKPIECE")
+    millGeomBuilder1 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(featureGeometry1)
+    millGeomBuilder1.PartGeometry.InitializeData(False)
+    geometrySetList1 = millGeomBuilder1.PartGeometry.GeometryList
+    geometrySet1 = geometrySetList1.FindItem(0)
 
     part1 = theSession.Parts.FindObject(str(part_var[0]))
-
     partLoadStatus1 = part1.LoadThisPartFully()
-    
     partLoadStatus1.Dispose()
     partLoadStatus2 = part1.LoadThisPartFully()
-    
     partLoadStatus2.Dispose()
     bodies1 = [NXOpen.Body.Null] * 1
-
-    component1 = workPart.ComponentAssembly.RootComponent.FindObject("COMPONENT "+str(part_var[0])+" 1")
-
-    body_part1=component1.Prototype.OwningPart
-            
-    for protBodyObject in body_part1.Bodies:
-        protBodyObject
-        body1 = component1.FindOccurrence(protBodyObject)
-        if body1 is None or body1.Layer > 256:
-            continue
+    if single_part == True:  
+        for BodyObject in workPart.Bodies:
+            body1 = BodyObject
+            if body1 is None or body1.Layer > 256:
+                continue
+    else:
+        component1 = workPart.ComponentAssembly.RootComponent.FindObject("COMPONENT "+str(part_var[0])+" 1")
+        body_part1=component1.Prototype.OwningPart       
+        for protBodyObject in body_part1.Bodies:
+            body1 = component1.FindOccurrence(protBodyObject)
+            if body1 is None or body1.Layer > 256:
+                continue
 
     bodies1[0] = body1
     bodyDumbRule1 = workPart.ScRuleFactory.CreateRuleBodyDumb(bodies1, True)
-    
     scCollector1 = geometrySet1.ScCollector
     rules1 = [None] * 1 
     rules1[0] = bodyDumbRule1
     scCollector1.ReplaceRules(rules1, False)
-    markId4 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Part Geometry")
-    theSession.DeleteUndoMark(markId4, None)
-    markId5 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Part Geometry")
-    theSession.DeleteUndoMark(markId5, None)
-    theSession.SetUndoMarkName(markId3, "Part Geometry")
-    theSession.DeleteUndoMark(markId3, None)
-    markId6 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Workpiece")
-    theSession.DeleteUndoMark(markId6, None)
-    markId7 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Workpiece")
     nXObject1 = millGeomBuilder1.Commit()
-    theSession.DeleteUndoMark(markId7, None)
-    theSession.SetUndoMarkName(markId2, "Workpiece")
     millGeomBuilder1.Destroy()
-    theSession.DeleteUndoMark(markId2, None)
-    markId8 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Start")
+    
     featureGeometry2 = nXObject1
     millGeomBuilder2 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(featureGeometry2)
-    theSession.SetUndoMarkName(markId8, "Workpiece Dialog")
     millGeomBuilder2.BlankGeometry.InitializeData(False)
-    markId9 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Start")
     geometrySetList2 = millGeomBuilder2.BlankGeometry.GeometryList
-    blankIpwSetList1 = millGeomBuilder2.BlankGeometry.BlankIpwMultipleSource.SetList
-    theSession.SetUndoMarkName(markId9, "Blank Geometry Dialog")
+    #blankIpwSetList1 = millGeomBuilder2.BlankGeometry.BlankIpwMultipleSource.SetList #
     taggedObject2 = geometrySetList2.FindItem(0)
     geometrySet2 = taggedObject2
-    taggedObject3 = blankIpwSetList1.FindItem(0)
-    blankIpwSet1 = taggedObject3
+    #taggedObject3 = blankIpwSetList1.FindItem(0) #
+    #blankIpwSet1 = taggedObject3 #
 
-    #   Dialog Begin Blank Geometry
-    # ----------------------------------------------
+    # Set Blank Geometry
     if bounding==True:
         millGeomBuilder2.BlankGeometry.BlankDefinitionType = NXOpen.CAM.GeometryGroup.BlankDefinitionTypes.AutoBlock
         millGeomBuilder2.BlankGeometry.AutoBlockOffsetPositiveZ = 4.0
-        millGeomBuilder2.BlankGeometry.AutoBlockOffsetPositiveY = 4.0
-        millGeomBuilder2.BlankGeometry.AutoBlockOffsetPositiveX = 4.0
-        millGeomBuilder2.BlankGeometry.AutoBlockOffsetNegativeX = 4.0
-        millGeomBuilder2.BlankGeometry.AutoBlockOffsetNegativeY = 4.0
-        millGeomBuilder2.BlankGeometry.AutoBlockOffsetNegativeZ = 4.0
+        millGeomBuilder2.BlankGeometry.AutoBlockOffsetPositiveY = 5.0
+        millGeomBuilder2.BlankGeometry.AutoBlockOffsetPositiveX = 5.0
+        millGeomBuilder2.BlankGeometry.AutoBlockOffsetNegativeX = 5.0
+        millGeomBuilder2.BlankGeometry.AutoBlockOffsetNegativeY = 5.0
+        millGeomBuilder2.BlankGeometry.AutoBlockOffsetNegativeZ = 6.0
         nXObject2 = millGeomBuilder2.Commit()
     
         featureGeometry3 = nXObject2
         millGeomBuilder3 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(featureGeometry3)
+        #millGeomBuilder3.BlankGeometry.BlankToggleValue = False # Hide Blank Bounding Box - uncomment for newer NX versions
         nXObject3 = millGeomBuilder3.Commit()
         millGeomBuilder3.Destroy()
     else:
@@ -187,35 +163,108 @@ def main() :
         rules2 = [None] * 1 
         rules2[0] = bodyDumbRule2
         scCollector2.ReplaceRules(rules2, False)
-        markId10 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Blank Geometry")
-        theSession.DeleteUndoMark(markId10, None)
-        markId11 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Blank Geometry")
-        theSession.DeleteUndoMark(markId11, None)
-        theSession.SetUndoMarkName(markId9, "Blank Geometry")
-        theSession.DeleteUndoMark(markId9, None)
-        markId12 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Workpiece")
-        theSession.DeleteUndoMark(markId12, None)
-        markId13 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Workpiece")
         nXObject2 = millGeomBuilder2.Commit()
-        theSession.DeleteUndoMark(markId13, None)
-        theSession.SetUndoMarkName(markId8, "Workpiece")
         millGeomBuilder2.Destroy()
-        theSession.DeleteUndoMark(markId8, None)
-        markId14 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Start")
+    
         featureGeometry3 = nXObject2
         millGeomBuilder3 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(featureGeometry3)
-        theSession.SetUndoMarkName(markId14, "Workpiece Dialog")
-        markId15 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Workpiece")
-        theSession.DeleteUndoMark(markId15, None)
-        markId16 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Workpiece")
+        
         nXObject3 = millGeomBuilder3.Commit()
-        theSession.DeleteUndoMark(markId16, None)
-        theSession.SetUndoMarkName(markId14, "Workpiece")
         millGeomBuilder3.Destroy()
-        theSession.DeleteUndoMark(markId14, None)
 
-    CSadding(nXObject3, workPart, theSession) # adds 6 coordinate systems
+    # Add 6 Coordinate Systems
+    CSadding(nXObject3, workPart, theSession)
+    
+   # Get Faces list
+    FaceList=body1.GetFaces() # Get Faces list
+    surfaceData = []
+    selectedFaces = []
+    
+    # Get Faces Data
+    for eachFace in FaceList:
+        for each_feature in workPart.Features:
+            pass
+        stampValue = each_feature.Timestamp
+        line = []
+        line.append(eachFace) # Add Face object. Remove str conversion to work within sinlge script
+        line.append(eachFace.Tag) # Add Face Tag
+        props = theUfSession.Modeling.AskFaceData(eachFace.Tag) # There is also a AskFaceProps()
+        faceUV = theUfSession.Modeling.AskFaceUvMinmax(eachFace.Tag) # Get surface u- and v- parameters
+        line.append(props[0]) # Append NX surface type code
+        line.append(props[1]) # Append surface point information
+        line.append(props[2]) # Face Direction information 
+        line.append(props[3]) # Face boundary information
+        line.append(props[4]) # Face major radius
+        line.append(props[5]) # Face minor radius - only for torus or cone
+        line.append(props[6]) # Face normal direction
+        line.append(faceUV) # Add the u,v parameter space min, max of a face. [0] - umin [1] - umax [2] - vmin [3] - vmax
+        
+        # Create list with excluded closed cylinders by cheking faces
+        if props[0] == 16  and props[6] == -1: # Check for Cylindrical Faces and mark them red
+            if faceUV[1] - faceUV [0] < 2*math.pi:
+                selectedFaces.append(eachFace)
+            else: 
+                pass
+        elif props[0] == 17  and props[6] == -1: # Check for Conical Faces and mark them red
+            if faceUV[1] - faceUV [0] < 2*math.pi:
+                selectedFaces.append(eachFace)
+            else:
+                pass
+        else:
+            selectedFaces.append(eachFace)
 
+        # Measure face
+        scCollector1 = workPart.ScCollectors.CreateCollector()
+        scCollector1.SetMultiComponent()
+        #selectionIntentRuleOptions1 = workPart.ScRuleFactory.CreateRuleOptions()
+        #selectionIntentRuleOptions1.SetSelectedFromInactive(False)
+        faces1 = [NXOpen.Face.Null] * 1 
+        faces1[0] = eachFace
+        faceDumbRule1 = workPart.ScRuleFactory.CreateRuleFaceDumb(faces1)
+        #faceDumbRule1 = workPart.ScRuleFactory.CreateRuleFaceDumb(faces1, selectionIntentRuleOptions1)
+        #selectionIntentRuleOptions1.Dispose()
+        rules1 = [None] * 1 
+        rules1[0] = faceDumbRule1
+        scCollector1.ReplaceRules(rules1, False)
+        measureMaster = workPart.MeasureManager.MasterMeasurement()
+        measureMaster.SequenceType = NXOpen.MeasureMaster.Sequence.Free
+        #measureMaster.UpdateAtTimestamp = True
+        measureMaster.SetNameSuffix("Face")
+        faceUnits1 = [NXOpen.Unit.Null] * 5 
+        unit1 = workPart.UnitCollection.FindObject("SquareMilliMeter")
+        faceUnits1[0] = unit1
+        unit2 = workPart.UnitCollection.FindObject("MilliMeter")
+        faceUnits1[1] = unit2
+        faceUnits1[2] = unit2
+        faceUnits1[3] = unit2
+        faceUnits1[4] = unit2
+        measureElement1 = workPart.MeasureManager.FacePropertiesElement(measureMaster, faceUnits1, 0, True, 0.98999999999999999, scCollector1)
+        measureElement1.MeasureObject1 = NXOpen.MeasureElement.Measure.Object
+        measureElement1.SetExpressionState(0, True)
+        measureElement1.SetExpressionState(1, True)
+        measureElement1.SetExpressionState(2, True)
+        measureElement1.SetExpressionState(3, True)
+        measureElement1.SetExpressionState(4, True)
+        measureElement1.SetExpressionState(5, True)
+        markId5 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Measurement Update")
+        nErrs4 = theSession.UpdateManager.DoUpdate(markId5)
+
+        # Collect Measure information from Expressions tab
+        theLw.Open()
+        for exp in workPart.Expressions:
+            search_line =str(stampValue+1)+") centroid)" # Search For Centroids Data
+            if str(search_line) in str(exp.Description):
+                CGpoint = []
+                CGpoint.append(exp.PointValue.X)
+                CGpoint.append(exp.PointValue.Y)
+                CGpoint.append(exp.PointValue.Z)
+                line.append(CGpoint)
+        theLw.Close()
+        
+        # add collected data to main list
+        surfaceData.append(line)
+
+    # Find Features
     markId46 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Start")
     featureRecognitionBuilder1 = workPart.CAMSetup.CreateFeatureRecognitionBuilder(NXOpen.CAM.CAMObject.Null)
     manualFeatureBuilder1 = featureRecognitionBuilder1.CreateManualFeatureBuilder()
@@ -223,151 +272,352 @@ def main() :
     featureRecognitionBuilder1.AddCadFeatureAttributes = False
     featureRecognitionBuilder1.MapFeatures = False
     theSession.SetUndoMarkName(markId46, "Find Features Dialog")
-    
-    #   Dialog Begin Find Features
-    # ----------------------------------------------
     featureRecognitionBuilder1.RecognitionType = NXOpen.CAM.FeatureRecognitionBuilder.RecognitionEnum.Parametric
     featureRecognitionBuilder1.UseFeatureNameAsType = True 
     featureRecognitionBuilder1.IgnoreWarnings = False
     vecdirections1 = []
     featureRecognitionBuilder1.SetMachiningAccessDirection(vecdirections1, 0.0)
-
-    #features were here
-    featureRecognitionBuilder1.SetFeatureTypes(features_data)
     
+    # Features List   
+    featureRecognitionBuilder1.SetFeatureTypes(features_data)
     featureRecognitionBuilder1.GeometrySearchType = NXOpen.CAM.FeatureRecognitionBuilder.GeometrySearch.Workpiece
     features1 = featureRecognitionBuilder1.FindFeatures()
-    markId47 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Find Features")
-    theSession.DeleteUndoMark(markId47, None)
-    markId48 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Find Features")
     nXObject10 = featureRecognitionBuilder1.Commit()
-    theSession.DeleteUndoMark(markId48, None)
-    theSession.SetUndoMarkName(markId46, "Find Features")
     featureRecognitionBuilder1.Destroy()
     manualFeatureBuilder1.Destroy()
-    markId49 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Start")
-    #featureProcessBuilder1 = workPart.CAMSetup.CreateFeatureProcessBuilder()
-    #featureProcessBuilder1.FeatureGrouping = NXOpen.CAM.FeatureProcessBuilder.FeatureGroupingType.UseExisting
-    #featureProcessBuilder1.FeatureGrouping = NXOpen.CAM.FeatureProcessBuilder.FeatureGroupingType.AlwaysCreateNew
-    #theSession.SetUndoMarkName(markId49, "Create Feature Process Dialog")
     
-    # ----------------------------------------------
-    #   Dialog Begin Create Feature Process
-    # ----------------------------------------------
+    # Collect all feature faces
+    currentFeatureFaces = []
+    allFeatureFaces = []
+    for eachFeature in features1:
+        currentFeatureFaces = eachFeature.GetFaces()
+        for eachFeautureFace in currentFeatureFaces:
+            allFeatureFaces.append(eachFeautureFace)
     
-    # ---- Create program group
-    nCGroup1 = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
-    objectsToBeMoved1 = [NXOpen.CAM.CAMObject.Null] * 1 
-    objectsToBeMoved1[0] = nCGroup1
-    nCGroup2 = workPart.CAMSetup.CAMGroupCollection.FindObject("NONE")
-    workPart.CAMSetup.MoveObjects(NXOpen.CAM.CAMSetup.View.ProgramOrder, objectsToBeMoved1, nCGroup2, NXOpen.CAM.CAMSetup.Paste.Before)
+    # Get Non-feature Faces
+    #otherFaces = [x for x in FaceList if x not in allFeatureFaces]
+    otherFaces = selectedFaces
 
+    # Add Cavity Mill Operations
+    markCavity = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Create Cavity Mill Operations [FBM AUTO]")
+    
+    # Cavity Mill Rough
+    programGroup = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
+    method = workPart.CAMSetup.CAMGroupCollection.FindObject("METHOD")
+    nCMethod = workPart.CAMSetup.CAMGroupCollection.CreateMethod(method, "mill_contour", "MILL_ROUGH", 
+                                                                 NXOpen.CAM.NCGroupCollection.UseDefaultName.TrueValue, "MILL_ROUGH")
+    
+    methodType = workPart.CAMSetup.CAMGroupCollection.FindObject("MILL_ROUGH")
+    tool = workPart.CAMSetup.CAMGroupCollection.FindObject("NONE")
+    orientGeometry = workPart.CAMSetup.CAMGroupCollection.FindObject("MCS_TOP")
+    operation = workPart.CAMSetup.CAMOperationCollection.Create(programGroup, methodType, tool, orientGeometry, "mill_contour", "CAVITY_MILL", 
+                                                                NXOpen.CAM.OperationCollection.UseDefaultName.FalseValue, "CAVITY_MILL_ROUGH")
+    cMB1 = workPart.CAMSetup.CAMOperationCollection.CreateCavityMillingBuilder(operation)
+    
+    # Initialize
+    isupdated = cMB1.CutLevel.InitializeData()
+    cMB1.CutParameters.UseToolHolder = True
+    cMB1.CutParameters.CheckIpwCollisions = True
+    cMB1.CutParameters.CutBelowOverhangingBlank = False
+    cMB1.CutParameters.IpwType = NXOpen.CAM.CutParametersIpwTypes.ThreeDimension
+    cMB1.CutParameters.SmallAreaAvoidance.SmallAreaStatus = NXOpen.CAM.SmallAreaAvoidance.StatusTypes.Ignore
+    cMB1.CutParameters.SmallAreaAvoidance.AreaSize.Value = 300.0
+    cMB1.CutParameters.CornerControl.SmoothingOption = NXOpen.CAM.CornerControlBuilder.SmoothingOptions.AllPasses
+    cMB1.BndStepover.PercentToolFlatBuilder.Value = 49.0
+    cMB1.CutParameters.CornerControl.FilletingRadius.Value = 49.0
+    # ----------------------------------------------------------------------    
+    # Cavity Mill Finish
+    nCMethod = workPart.CAMSetup.CAMGroupCollection.CreateMethod(method, "mill_contour", "MILL_FINISH",
+                                                                 NXOpen.CAM.NCGroupCollection.UseDefaultName.TrueValue, "MILL_FINISH")
+    
+    methodType = workPart.CAMSetup.CAMGroupCollection.FindObject("MILL_FINISH")
+    operation = workPart.CAMSetup.CAMOperationCollection.Create(programGroup, methodType, tool, orientGeometry, "mill_contour", "CAVITY_MILL",
+                                                                NXOpen.CAM.OperationCollection.UseDefaultName.FalseValue, "CAVITY_MILL_FINISH")
+    
+    cMB2 = workPart.CAMSetup.CAMOperationCollection.CreateCavityMillingBuilder(operation)
+    
+    # Initialize
+    isupdated1 = cMB2.CutLevel.InitializeData()
+    cMB2.CutParameters.UseToolHolder = True
+    cMB2.CutParameters.CheckIpwCollisions = True
+    cMB2.CutParameters.CutBelowOverhangingBlank = False
+    cMB2.CutParameters.SmallAreaAvoidance.SmallAreaStatus = NXOpen.CAM.SmallAreaAvoidance.StatusTypes.Ignore
+    cMB2.CutParameters.SmallAreaAvoidance.AreaSize.Value = 300.0
+    cMB2.BndStepover.PercentToolFlatBuilder.Value = 49.0 
+    cMB2.CutParameters.CornerControl.SmoothingOption = NXOpen.CAM.CornerControlBuilder.SmoothingOptions.AllButLastPass
+    cMB2.CutParameters.CornerControl.FilletingRadius.Value = 49.0
+    cMB2.CutParameters.IpwType = NXOpen.CAM.CutParametersIpwTypes.ThreeDimension
+    
+    # ----------------------------------------------------------------------    
+    # Rest Mill Rough
+    orientGeometry = workPart.CAMSetup.CAMGroupCollection.FindObject("MCS_DOWN")
+    methodType = workPart.CAMSetup.CAMGroupCollection.FindObject("MILL_ROUGH")
+    operation = workPart.CAMSetup.CAMOperationCollection.Create(programGroup, methodType, tool, orientGeometry, "mill_contour", "REST_MILLING", NXOpen.CAM.OperationCollection.UseDefaultName.FalseValue, "REST_MILLING_ROUGH")
+    cMB3 = workPart.CAMSetup.CAMOperationCollection.CreateCavityMillingBuilder(operation)
+   
+    # Initialize  
+    isupdated = cMB3.CutLevel.InitializeData()
+    cMB3.CutParameters.UseToolHolder = True
+    cMB3.CutParameters.CheckIpwCollisions = True
+    cMB3.CutParameters.CutBelowOverhangingBlank = False
+    cMB3.CutParameters.SmallAreaAvoidance.SmallAreaStatus = NXOpen.CAM.SmallAreaAvoidance.StatusTypes.Ignore
+    cMB3.CutParameters.SmallAreaAvoidance.AreaSize.Value = 300.0
+    cMB3.BndStepover.PercentToolFlatBuilder.Value = 49.0 
+    cMB3.CutParameters.CornerControl.SmoothingOption = NXOpen.CAM.CornerControlBuilder.SmoothingOptions.AllPasses
+    cMB3.CutParameters.CornerControl.FilletingRadius.Value = 49.0
+    cMB3.CutParameters.IpwType = NXOpen.CAM.CutParametersIpwTypes.ThreeDimension
+    # ----------------------------------------------------------------------    
+    # Rest Mill Finish
+    methodType = workPart.CAMSetup.CAMGroupCollection.FindObject("MILL_FINISH")
+    operation = workPart.CAMSetup.CAMOperationCollection.Create(programGroup, methodType, tool, orientGeometry, "mill_contour", "REST_MILLING", NXOpen.CAM.OperationCollection.UseDefaultName.FalseValue, "REST_MILLING_FINISH")
+    cMB4 = workPart.CAMSetup.CAMOperationCollection.CreateCavityMillingBuilder(operation)
+   
+    # Initialize  
+    isupdated = cMB4.CutLevel.InitializeData()
+    cMB4.CutParameters.UseToolHolder = True
+    cMB4.CutParameters.CheckIpwCollisions = True
+    cMB4.CutParameters.CutBelowOverhangingBlank = False
+    cMB4.CutParameters.SmallAreaAvoidance.SmallAreaStatus = NXOpen.CAM.SmallAreaAvoidance.StatusTypes.Ignore
+    cMB4.CutParameters.SmallAreaAvoidance.AreaSize.Value = 300.0
+    cMB4.BndStepover.PercentToolFlatBuilder.Value = 49.0 
+    cMB4.CutParameters.CornerControl.SmoothingOption = NXOpen.CAM.CornerControlBuilder.SmoothingOptions.AllButLastPass
+    cMB4.CutParameters.CornerControl.FilletingRadius.Value = 49.0
+    cMB4.CutParameters.IpwType = NXOpen.CAM.CutParametersIpwTypes.ThreeDimension
+
+    ####
+    # Create Feature Process
     featureProcessBuilder1 = workPart.CAMSetup.CreateFeatureProcessBuilder()
-    markId50 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Create Feature Process")
-    theSession.DeleteUndoMark(markId50, None)
-    markId51 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Create Feature Process")
     featureProcessBuilder1.Type = NXOpen.CAM.FeatureProcessBuilder.FeatureProcessType.RuleBased
-    featureProcessBuilder1.SetGeometryLocation("")
-    #featureProcessBuilder1.FeatureGrouping = NXOpen.CAM.FeatureProcessBuilder.FeatureGroupingType.AlwaysCreateNew
+    featureProcessBuilder1.SetGeometryLocation("PROGRRAM")
     featureProcessBuilder1.FeatureGrouping = NXOpen.CAM.FeatureProcessBuilder.FeatureGroupingType.UseExisting
-    featureProcessBuilder1.SetRuleLibraries(operations_data) # set operations library check
-    id1 = theSession.NewestVisibleUndoMark
-    nErrs6 = theSession.UpdateManager.DoUpdate(id1)
+
+    # Selected Processes
+    featureProcessBuilder1.SetRuleLibraries(operations_data) # set operations from excel sheet library 
     operations1, featureProcessBuilderStatus1 = featureProcessBuilder1.CreateFeatureProcesses(features1)
     result1 = featureProcessBuilderStatus1.GetResultStatus()
     featureProcessBuilderStatus1.Dispose()
-    theSession.DeleteUndoMark(markId51, None)
-    theSession.SetUndoMarkName(id1, "Create Feature Process")
     featureProcessBuilder1.Destroy()
     theSession.CleanUpFacetedFacesAndEdges()
-    featureGeometry4 = nXObject3
+    
+    # Get all faces from successfully processed features -------------------------------------------------------------------------------------
+    currentFeatureFaces = []
+    processed_feature_faces = []
+    for each_feature in features1:
+        if each_feature.GetGroups():
+            currentFeatureFaces = each_feature.GetFaces()
+            for eachFeautureFace in currentFeatureFaces:
+                processed_feature_faces.append(eachFeautureFace)
 
-    # Generate Tool Path
-    #objects1 = [NXOpen.CAM.CAMObject.Null] * 1 
-    #objects1[0] = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
-    #workPart.CAMSetup.GenerateToolPath(objects1)
+    otherFaces = [x for x in FaceList if x not in processed_feature_faces]
+    
+    # Paste Selected Faces to Cavity Mill Operation
+    """
+    cMB1.CutAreaGeometry.InitializeData(False)
+    geometrySetList = cMB1.CutAreaGeometry.GeometryList
+    geometrySet = geometrySetList.FindItem(0)
+
+    faces = [NXOpen.Face.Null] * len(otherFaces) 
+    for x in range(len(otherFaces)):
+        faces[x] = otherFaces[x]
+    faceDumbRule1 = workPart.ScRuleFactory.CreateRuleFaceDumb(faces)
+    scCollector = geometrySet.ScCollector
+    rules1 = [None] * 1 
+    rules1[0] = faceDumbRule1
+    scCollector.ReplaceRules(rules1, False)
+    """
+    # Commit Cavity Mill Rough
+    nXObject1 = cMB1.Commit()
+    
+    # Select Tool
+    topZ = cMB1.CutLevel.TopZc
+    chopedData = [x for x in surfaceData if x[0] not in processed_feature_faces]
+    tool_library = create_tool_library(tools_data)
+    rads = find_radi(chopedData)
+    #_print("Top Z:"+str(topZ)+" Radius: "+str(rads[1]*4*1.125))
+    rough_tool = tool_finder(tool_library, "2", "1", topZ, rads[1]*4*1.125) # tool library var, T value, ST value, Flute length >=, Diameter <=
+    finish_tool = tool_finder(tool_library, "2", "1", topZ, rads[1]*2)
+
+    # Paste Tool
+    try:
+        tool1 = workPart.CAMSetup.CAMGroupCollection.FindObject(rough_tool)
+    except:
+        tool1, success1 = workPart.CAMSetup.RetrieveTool(rough_tool)
+
+    objectsToBeMoved1 = [NXOpen.CAM.CAMObject.Null] * 1 
+    cavityMilling2 = nXObject1
+    objectsToBeMoved1[0] = cavityMilling2
+    workPart.CAMSetup.MoveObjects(NXOpen.CAM.CAMSetup.View.MachineTool, objectsToBeMoved1, tool1, NXOpen.CAM.CAMSetup.Paste.Inside)    
+    
+    # Destroy
+    cMB1.Destroy()
+
+     # End for Cavity Mill Finish ---------------------------------------------------------------------------------------------------
+    # Paste Desired Faces to Cavity Mill Operation
+    cMB2.CutAreaGeometry.InitializeData(False)
+    geometrySetList = cMB2.CutAreaGeometry.GeometryList
+    geometrySet = geometrySetList.FindItem(0)
+    
+    faces = [NXOpen.Face.Null] * len(otherFaces) 
+    for x in range(len(otherFaces)):
+        faces[x] = otherFaces[x]
+    faceDumbRule1 = workPart.ScRuleFactory.CreateRuleFaceDumb(faces)
+    scCollector = geometrySet.ScCollector
+    rules1 = [None] * 1 
+    rules1[0] = faceDumbRule1
+    scCollector.ReplaceRules(rules1, False)
+
+    # Commit
+    nXObject1 = cMB2.Commit()
+
+    # Paste Tool
+    try:
+        tool2 = workPart.CAMSetup.CAMGroupCollection.FindObject(finish_tool)
+    except:
+        tool2, success2 = workPart.CAMSetup.RetrieveTool(finish_tool)
+
+    objectsToBeMoved1 = [NXOpen.CAM.CAMObject.Null] * 1 
+    cavityMilling2 = nXObject1
+    objectsToBeMoved1[0] = cavityMilling2
+    workPart.CAMSetup.MoveObjects(NXOpen.CAM.CAMSetup.View.MachineTool, objectsToBeMoved1, tool2, NXOpen.CAM.CAMSetup.Paste.Inside)   
+    
+    # Destroy
+    cMB2.Destroy() 
+    
+    # End for Rest Milling Rough ---------------------------------------------------------------------
+    # Paste Selected Faces to Resit Mill Rough Operation
+    cMB3.CutAreaGeometry.InitializeData(False)
+    geometrySetList = cMB3.CutAreaGeometry.GeometryList
+    geometrySet = geometrySetList.FindItem(0)
+    
+    faces = [NXOpen.Face.Null] * len(otherFaces) 
+    for x in range(len(otherFaces)):
+        faces[x] = otherFaces[x]
+    faceDumbRule1 = workPart.ScRuleFactory.CreateRuleFaceDumb(faces)
+    scCollector = geometrySet.ScCollector
+    rules1 = [None] * 1 
+    rules1[0] = faceDumbRule1
+    scCollector.ReplaceRules(rules1, False)
+
+    # Commit
+    nXObject3 = cMB3.Commit()
+
+    # Paste Tool
+    objectsToBeMoved1 = [NXOpen.CAM.CAMObject.Null] * 1 
+    cavityMilling3 = nXObject3
+    objectsToBeMoved1[0] = cavityMilling3
+    workPart.CAMSetup.MoveObjects(NXOpen.CAM.CAMSetup.View.MachineTool, objectsToBeMoved1, tool1, NXOpen.CAM.CAMSetup.Paste.Inside)   
+    
+    # Destroy
+    cMB3.Destroy()
+
+    # End for Rest Milling Finish -------------------------------------------------------------------
+    # Paste Selected Faces to Rest Mill Rough Operation
+    cMB4.CutAreaGeometry.InitializeData(False)
+    geometrySetList = cMB4.CutAreaGeometry.GeometryList
+    geometrySet = geometrySetList.FindItem(0)
+    
+    faces = [NXOpen.Face.Null] * len(otherFaces) 
+    for x in range(len(otherFaces)):
+        faces[x] = otherFaces[x]
+    faceDumbRule1 = workPart.ScRuleFactory.CreateRuleFaceDumb(faces)
+    scCollector = geometrySet.ScCollector
+    rules1 = [None] * 1 
+    rules1[0] = faceDumbRule1
+    scCollector.ReplaceRules(rules1, False)
+    
+    # Commit
+    nXObject4 = cMB4.Commit()
+    
+    # Paste Tool
+    objectsToBeMoved1 = [NXOpen.CAM.CAMObject.Null] * 1 
+    cavityMilling4 = nXObject4
+    objectsToBeMoved1[0] = cavityMilling4
+    workPart.CAMSetup.MoveObjects(NXOpen.CAM.CAMSetup.View.MachineTool, objectsToBeMoved1, tool2, NXOpen.CAM.CAMSetup.Paste.Inside)
+
+    # Destroy
+    cMB4.Destroy()
+
+    # Creature Setup Folders and remove empty ones
+    start_point = workPart.CAMSetup.CAMOperationCollection.FindObject("GEOMETRY")
+    objects_at_start = NXOpen.CAM.NCGroup.GetMembers(start_point)
+    data = _operations_collector(objects_at_start, workPart)
+
+    nTop = 0
+    nDown = 0
+    nFront = 0
+    nBack = 0
+    nLeft = 0
+    nRight = 0
+
+    lTop = []
+    lDown = []
+    lFront = []
+    lBack = []
+    lLeft = []
+    lRight = []
+
+    for x in range(len(data)):
+        if data[x]['MCS'] == "MCS_TOP":
+            nTop += 1
+            lTop.append(data[x]['Operation name'])
+        elif data[x]['MCS'] == "MCS_DOWN":
+            nDown += 1
+            lDown.append(data[x]['Operation name'])
+        elif data[x]['MCS'] == "MCS_FRONT":
+            nFront += 1
+            lFront.append(data[x]['Operation name'])
+        elif data[x]['MCS'] == "MCS_BACK":
+            nBack += 1
+            lBack.append(data[x]['Operation name'])
+        elif data[x]['MCS'] == "MCS_LEFT":
+            nLeft += 1
+            lLeft.append(data[x]['Operation name'])
+        elif data[x]['MCS'] == "MCS_RIGHT":
+            nRight += 1
+            lRight.append(data[x]['Operation name'])
+
+    Group_names = [ lTop, lDown, lFront, lBack, lLeft, lRight]
+    Num_of_setups = 0
+    Counters = [nTop, nDown, nFront, nBack, nLeft, nRight]
+    
+    for i in range(len(Counters)):
+        if Counters[i]>0:
+            Num_of_setups += 1
+            
+            oProgram = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
+            nCGroup = workPart.CAMSetup.CAMGroupCollection.CreateProgram(oProgram, "mill_planar", 
+                    "PROGRAM", NXOpen.CAM.NCGroupCollection.UseDefaultName.FalseValue, 
+                    "SETUP_"+str(Num_of_setups))
+            programOrderGroupBuilder = workPart.CAMSetup.CAMGroupCollection.CreateProgramOrderGroupBuilder(nCGroup)
+            programOrderGroupBuilder.Description = "Setup №" +str(Num_of_setups)
+            Folder_Object = programOrderGroupBuilder.Commit()
+            
+            objectsToBeMoved = [NXOpen.CAM.CAMObject.Null] * Counters[i]
+            for j in range(Counters[i]):
+                objectsToBeMoved[j] = workPart.CAMSetup.CAMOperationCollection.FindObject(Group_names[i][j]) 
+            workPart.CAMSetup.MoveObjects(NXOpen.CAM.CAMSetup.View.ProgramOrder, objectsToBeMoved, Folder_Object, NXOpen.CAM.CAMSetup.Paste.Inside) 
+
+    # Remove groups
+    stage2 = workPart.CAMSetup.CAMOperationCollection.FindObject("PROGRAM")
+    objects_at_2 = NXOpen.CAM.NCGroup.GetMembers(stage2)
+    remove_list = _grop_remover(objects_at_2, workPart)
+    if not remove_list:
+        pass
+        #_print("No Empty Folders") 
+    else:
+        for i in range(len(remove_list)):
+            objectsToBeDeleted = [NXOpen.TaggedObject.Null] * 1
+            objectsToBeDeleted[0] = workPart.CAMSetup.CAMOperationCollection.FindObject(remove_list[i]) 
+            nErrs1 = theSession.UpdateManager.AddObjectsToDeleteList(objectsToBeDeleted)       
+        nErrs2 = theSession.UpdateManager.DoUpdate(id1)
 
     # Save file
     partSave = workPart.Save(NXOpen.BasePart.SaveComponents.TrueValue, NXOpen.BasePart.CloseAfterSave.FalseValue)
     #partSaveStatus1 = workPart.SaveAs(Output_path+"\\Computed_Assembly.prt")
     partSave.Dispose()
-
-def s_n_f():
-    # Assign Feeds and Speeds
-    with open(Json_Speed_and_feeds) as json_file:
-        data= json.load(json_file)
-
-    start_point = workPart.CAMSetup.CAMOperationCollection.FindObject("GEOMETRY")
-    objects_at_start = NXOpen.CAM.NCGroup.GetMembers(start_point)
-    millGeomBuilder1 = workPart.CAMSetup.CAMGroupCollection.CreateMillGeomBuilder(start_point)
-
-    group_list = []
-    checked_list = []
-    operation_list = []
-    cutting_tool_list = []
-
-    for each_object in objects_at_start:
-        if workPart.CAMSetup.IsGroup(each_object) == True:
-            group_list.append(each_object.Name)
-        elif workPart.CAMSetup.IsOperation(each_object) == True:
-            operation_list.append(each_object.Name)
-            cutting_tool = each_object.GetParent(NXOpen.CAM.CAMSetupView.MachineTool)
-            cutting_tool_list.append(cutting_tool.Name)
-
-    while group_list != checked_list:
-        for each_object in group_list:
-            if each_object not in checked_list:
-                temp_objects = get_group_objects(each_object,workPart)
-                for sub_object in temp_objects:
-                    if workPart.CAMSetup.IsGroup(sub_object) == True:
-                        group_list.append(sub_object.Name)
-                    elif workPart.CAMSetup.IsOperation(sub_object) == True:
-                        operation_list.append(sub_object.Name)
-                checked_list.append(each_object)
-    
-    for each_operation in operation_list:
-        Operation = workPart.CAMSetup.CAMOperationCollection.FindObject(str(each_operation))
-        x=str(Operation)
-        cutting_tool = Operation.GetParent(NXOpen.CAM.CAMSetup.View.MachineTool)
-        x=x.split(" ",1)
-        x=x[0].split("<NXOpen.CAM.",1)
-        x=x[1]
-        x="Create"+x+"Builder"
-        selected_tool=str(cutting_tool.Name)
-        material=str(millGeomBuilder1.GetMaterial())
-        a=selected_tool+','+material
-        try:
-            buff = data[a]
-            speed = float(buff[0])
-            feed = float(buff[1])                 
-            depth = float(buff[2])
-
-            K=builder_selector(x,Operation,workPart)
-            K.FeedsBuilder.SurfaceSpeedBuilder.Value = speed
-            K.FeedsBuilder.FeedPerToothBuilder.Value = feed
-            K.DepthPerCut.Value = depth
-            K.FeedsBuilder.RecalculateData(NXOpen.CAM.FeedsBuilder.RecalcuateBasedOn.SurfaceSpeed)
-            K.Commit()
-        except:
-            pass
-
-    nCGroup1 = workPart.CAMSetup.CAMGroupCollection.FindObject("PROGRAM")
-    theSession.CAMSession.PathDisplay.ShowToolPath(nCGroup1)
-    
-    markId57 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Generate Tool Paths")
-    
-    objects1 = [NXOpen.CAM.CAMObject.Null] * 1 
-    objects1[0] = nCGroup1
-    workPart.CAMSetup.GenerateToolPath(objects1)
       
-    # Save file
-    partSaveStatus1 = workPart.Save(NXOpen.BasePart.SaveComponents.TrueValue, NXOpen.BasePart.CloseAfterSave.FalseValue)
-    #partSaveStatus1 = workPart.SaveAs(Output_path+"\\Computed_Assembly.prt")
-    partSaveStatus1.Dispose()
-
 def CSadding(nXObject3, workPart, theSession):
-     
-     # Delete Local coordinate system if it exists
+    # Delete Local coordinate system if it exists
     try:
         markId1_1 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Delete")
         objects1_1 = [NXOpen.TaggedObject.Null] * 1 
@@ -380,60 +630,29 @@ def CSadding(nXObject3, workPart, theSession):
 
     # ----------------------------------------------
     #   Menu: Insert->Geometry...
-    # ----------------------------------------------
-    markId17 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Create Geometry")
     
     featureGeometry4 = nXObject3
     nCGroup1 = workPart.CAMSetup.CAMGroupCollection.CreateGeometry(featureGeometry4, "mill_planar", "MCS", NXOpen.CAM.NCGroupCollection.UseDefaultName.FalseValue, "MCS_TOP")
-    
-    markId18 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Start")
-    
     orientGeometry1 = nCGroup1
     millOrientGeomBuilder1 = workPart.CAMSetup.CAMGroupCollection.CreateMillOrientGeomBuilder(orientGeometry1)
     csyspurposemode1 = millOrientGeomBuilder1.GetCsysPurposeMode()
     specialoutputmode1 = millOrientGeomBuilder1.GetSpecialOutputMode()
     toolaxismode1 = millOrientGeomBuilder1.GetToolAxisMode()
-    
     origin1 = NXOpen.Point3d(0.0, 0.0, 0.0)
     normal1 = NXOpen.Vector3d(0.0, 0.0, 1.0)
     plane1 = workPart.Planes.CreatePlane(origin1, normal1, NXOpen.SmartObject.UpdateOption.AfterModeling)
-    
     unit1 = workPart.UnitCollection.FindObject("MilliMeter")
     expression1 = workPart.Expressions.CreateSystemExpressionWithUnits("0", unit1)
-    
     expression2 = workPart.Expressions.CreateSystemExpressionWithUnits("0", unit1)
-    
     lowerlimitmode1 = millOrientGeomBuilder1.GetLowerLimitMode()
-    
     origin2 = NXOpen.Point3d(0.0, 0.0, 0.0)
     normal2 = NXOpen.Vector3d(0.0, 0.0, 1.0)
     plane2 = workPart.Planes.CreatePlane(origin2, normal2, NXOpen.SmartObject.UpdateOption.AfterModeling)
-    
     expression3 = workPart.Expressions.CreateSystemExpressionWithUnits("0", unit1)
-    
     expression4 = workPart.Expressions.CreateSystemExpressionWithUnits("0", unit1)
-    
-    theSession.SetUndoMarkName(markId18, "MCS Dialog")
-    
-    # ----------------------------------------------
-    #   Dialog Begin MCS
-    # ----------------------------------------------
     toolaxismode2 = millOrientGeomBuilder1.GetToolAxisMode()
-    
     millOrientGeomBuilder1.SetToolAxisMode(NXOpen.CAM.OrientGeomBuilder.ToolAxisModes.PositiveZOfMcs)
-    
-    markId19 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "MCS")
-    
-    theSession.DeleteUndoMark(markId19, None)
-    
-    markId20 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "MCS")
-    
     nXObject4 = millOrientGeomBuilder1.Commit()
-    
-    theSession.DeleteUndoMark(markId20, None)
-    
-    theSession.SetUndoMarkName(markId18, "MCS")
-    
     millOrientGeomBuilder1.Destroy()
     
     try:
@@ -464,11 +683,8 @@ def CSadding(nXObject3, workPart, theSession):
         
     plane1.DestroyPlane()
     
-    theSession.DeleteUndoMark(markId18, None)
-    
     # ----------------------------------------------
     #   Menu: Insert->Geometry...
-    # ----------------------------------------------
     markId21 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Create Geometry")
     
     nCGroup2 = workPart.CAMSetup.CAMGroupCollection.CreateGeometry(featureGeometry4, "mill_planar", "MCS", NXOpen.CAM.NCGroupCollection.UseDefaultName.FalseValue, "MCS_DOWN")
@@ -996,7 +1212,6 @@ def CSadding(nXObject3, workPart, theSession):
     theSession.DeleteUndoMark(markId42, None)
 
 def _print(message):
-   
   NXOpen.UI.GetUI().NXMessageBox.Show("Print Message",NXOpen.NXMessageBox.DialogType.Information,str(message))
 
 def get_group_objects(group_name,workPart):
@@ -1004,154 +1219,135 @@ def get_group_objects(group_name,workPart):
     new_objects = NXOpen.CAM.NCGroup.GetMembers(find_it)
     return new_objects
 
-def builder_selector(name_string, operation_name, workPart):
-    if name_string == "CreateCavityMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateCavityMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateCenterlineDrillTurningBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateCenterlineDrillTurningBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateChamferMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateChamferMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateCylinderMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateCylinderMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateDpmitpBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateDpmitpBuilder(operation_name)
-        return Builder
+def _operations_collector(objects_at_start, workPart):
     
-    elif name_string == "CreateEngravingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateEngravingBuilder(operation_name)
-        return Builder
+    group_list = []
+    checked_list = []
+    operation_list = []
+    op_data_list = []
 
-    elif name_string == "CreateFaceMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateFaceMillingBuilder(operation_name)
-        return Builder
+    for each_object in objects_at_start:
+        if workPart.CAMSetup.IsGroup(each_object) == True:
+            group_list.append(each_object.Name)
+        elif workPart.CAMSetup.IsOperation(each_object) == True:
+            op_data = _get_op_data(each_object)
+            op_data_list.append(op_data)
 
-    elif name_string == "CreateFeatureMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateFeatureMillingBuilder(operation_name)
-        return Builder
+    while group_list != checked_list:
+        for each_object in group_list:
+            if each_object not in checked_list:
+                temp_objects = get_group_objects(each_object,workPart)
+                for sub_object in temp_objects:
+                    if workPart.CAMSetup.IsGroup(sub_object) == True:
+                        group_list.append(sub_object.Name)
+                    elif workPart.CAMSetup.IsOperation(sub_object) == True:
+                        op_data = _get_op_data(sub_object)
+                        op_data_list.append(op_data)
+                checked_list.append(each_object)
+    return(op_data_list)
 
-    elif name_string == "CreateFinishTurningBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateFinishTurningBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateGmcopBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateGmcopBuilder(operation_name)
-        return Builder
-    
-    elif name_string == "CreateGrooveMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateGrooveMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateHoleDrillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateHoleDrillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateHoleMakingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateHoleMakingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateLaserTeachMode":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateLaserTeachMode(operation_name)
-        return Builder
-
-    elif name_string == "CreateLatheMachineControlBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateLatheMachineControlBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateLatheUserDefinedBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateLatheUserDefinedBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateMillMachineControlBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateMillMachineControlBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateMillToolProbingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateMillToolProbingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateMillUserDefinedBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateMillUserDefinedBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreatePlanarMillingBuilder":
-        uilder=workPart.CAMSetup.CAMOperationCollection.CreatePlanarMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreatePlungeMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreatePlungeMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreatePointToPointBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreatePointToPointBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateRoughTurningBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateRoughTurningBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateSurfaceContourBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateSurfaceContourBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateTeachmodeTurningBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateTeachmodeTurningBuilder(operation_name)
-        return Builder
-
-
-    elif name_string == "CreateThreadMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateThreadMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateThreadTurningBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateThreadTurningBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateTurnPartProbingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateTurnPartProbingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateTurnToolProbingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateTurnToolProbingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateVazlMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateVazlMillingBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateVolumeBased25DMillingOperationBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateVolumeBased25dMillingOperationBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateWedmMachineControlBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateWedmMachineControlBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateWedmOperationBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateWedmOperationBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateWedmUserDefinedBuilder":
-        uilder=workPart.CAMSetup.CAMOperationCollection.CreateWedmUserDefinedBuilder(operation_name)
-        return Builder
-
-    elif name_string == "CreateZlevelMillingBuilder":
-        Builder=workPart.CAMSetup.CAMOperationCollection.CreateZlevelMillingBuilder(operation_name)
-        return Builder
-
+def _get_op_data(obj):
+    op_data = {}
+    op_data['Operation name'] = obj.Name
+    cutting_tool = obj.GetParent(NXOpen.CAM.CAMSetup.View.MachineTool)
+    op_data['Tool'] = cutting_tool.Name
+    op_data['Tool Description'] = str(cutting_tool.GetStringValue("Template Subtype"))
+    op_data['Stock value'] = str(obj.GetRealValue("Stock Part"))
+    op_data['Spindle RPM'] = str(obj.GetRealValue("Spindle RPM"))
+    if "25DMilling"  in str(obj):
+        op_data['Depth Per Cut'] = str(obj.GetRealValue("Depth Per Cut"))
     else:
-        _print('No Match')
-        Builder=0
-        return Builder
+        op_data['Depth Per Cut'] = str("-")
+    feed_rate_tuple = obj.GetFeedRate("Feed Cut")
+    if feed_rate_tuple[0] == NXOpen.CAM.CAMObject.FeedRateUnit.PerMinute:
+        feed_rate_units = "mm/min"
+    elif feed_rate_tuple[0] == NXOpen.CAM.CAMObject.FeedRateUnit.PerRevolution:
+        feed_rate_units = "mm/rev"
+    else:
+        feed_rate_units = "None"
+    op_data['Feedrate value'] = str(feed_rate_tuple[1])    
+    op_data['Feedrate type'] = feed_rate_units
+    op_data['Path time'] = str(obj.GetToolpathTime())
+    op_data['Toolpath Cutting Length'] = str(obj.GetToolpathCuttingLength())
+    op_data['Operation Description'] = str(obj.GetStringValue("Template Subtype"))
+    if str(obj.GetStringValue("Template Subtype")) in {"CAVITY_MILL", "REST_MILLING"}:
+        parent_feature = obj.GetParent(NXOpen.CAM.CAMSetup.View.Geometry)
+        if "MCS_" in str(parent_feature.Name):
+            op_data['MCS']= str(parent_feature.Name)
+        else:
+            orient = parent_feature.GetParent()
+            op_data['MCS'] = str(orient.Name)    
+    else:
+        parent_feature = obj.GetParent(NXOpen.CAM.CAMSetup.View.Geometry) 
+        orient = parent_feature.GetParent()
+        op_data['MCS'] = str(orient.Name)
+    return op_data
 
+def _grop_remover(objects_at_start, workPart):
+    
+    remove_group_list = []
+
+    for each_object in objects_at_start:
+        if workPart.CAMSetup.IsGroup(each_object) == True:
+            if not "SETUP_" in each_object.Name:
+                remove_group_list.append(each_object.Name)
+            #_print(str(each_object.Name))
+    return(remove_group_list)
+
+def tool_finder(tool_library, t_T, t_ST, t_FluteLength, t_Diameter):
+    sorted_tools = []
+    search_data = []
+    for each_line in tool_library:
+        if each_line[4] == t_T and each_line[5] == t_ST:
+            if each_line[6] >= t_FluteLength and each_line[7] == t_Diameter:
+                search_data.append(each_line)
+    if not search_data:
+        for each_line in tool_library:
+            if each_line[4] == t_T and each_line[5] == t_ST:
+                if each_line[6] >= t_FluteLength and each_line[7] <= t_Diameter:
+                    search_data.append(each_line)
+    if not search_data:
+        for each_line in tool_library:
+            if each_line[4] == t_T and each_line[5] == t_ST:
+                if each_line[6] <= t_FluteLength and each_line[7] <= t_Diameter:
+                    search_data.append(each_line)            
+    
+    sorted_tools=sorted(search_data, key=operator.itemgetter(7,6), reverse=True)
+    if sorted_tools:
+        return(sorted_tools[0][0])
+    else:
+        print("\nERROR\nNo matching tools found!")
+
+def create_tool_library(tool_data):
+    tool_library = []
+    for each_tool in tool_data:
+        tool_line = []
+        buff = tool_data[each_tool]
+        tool_line.append(each_tool) # add tool Name,
+        tool_line.append(buff[0]) # Speed,
+        tool_line.append(buff[1]) # Feed,
+        tool_line.append(buff[2]) # Depth,
+        tool_line.append(buff[3]) # T - type,
+        tool_line.append(buff[4]) # ST - subtype,
+        if buff[5] != '':
+            tool_line.append(float(buff[5])) # FLEN - flut length,
+        if buff[6] != '':
+            tool_line.append(float(buff[6])) # DIA - tool diameter
+        tool_library.append(tool_line)
+    return(tool_library)
+
+def find_radi(surface_data):
+    cylinders_data = []
+    # Get cylinders
+    for x in surface_data:
+        if x[2] == 16: # NX surface type code 16 = cylinder 17 = cone 18 = sphere 19 = revolved (toroidal)
+                    # 20 = extruded 22 = bounded plane 23 = fillet (blend) 43 = b-surface 65 = offset surface 66 = foreign surface 
+            cylinders_data.append(x)
+
+    sorted_surface = sorted(cylinders_data,key=operator.itemgetter(6), reverse=True)
+
+    max_rad = round(sorted_surface[0][6],1) # get max surface curvature radius
+    min_rad = round(sorted_surface[-1][6],1) # get min surface curvature radius
+    return(max_rad, min_rad) 
+     
 main()
-
-#if __name__ == '__main__':
-#    main()
